@@ -16,6 +16,9 @@ __pycache__/
 .coverage
 .pytest_cache/
 
+# Machine identity (cada máquina define su rol localmente)
+.machine
+
 # OS / IDE
 Thumbs.db
 .DS_Store

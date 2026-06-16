@@ -102,6 +102,57 @@ El plan de implementación completo está en [CHANGES.md](CHANGES.md). Resumen:
 
 ---
 
+## Engram — Memoria Persistente entre Máquinas
+
+Usamos **Engram** para que las decisiones de arquitectura viajen entre máquinas vía git.
+
+### Identidad de Máquina
+
+Cada máquina tiene un archivo `.machine` (gitignored, local) que define su rol. **Leerlo al empezar sesión.**
+
+```json
+// Claude Pro — arquitecto:
+{"role":"architect","name":"Claude Pro"}
+// VS Code Copilot — implementador:
+{"role":"copilot","name":"Copilot"}
+// Sin suscripción — QA / tareas bajas:
+{"role":"qa","name":"QA manual"}
+```
+
+| Rol | Qué hace | Exporta engram |
+|-----|----------|----------------|
+| `architect` | Propone changes, diseña, implementa CRÍTICO | ✅ SÍ — sus decisiones viajan en `.engram/chunks/` |
+| `copilot` | Implementa tasks desde specs con TDD | ❌ NO — solo importa |
+| `qa` | Testing manual, tareas BAJAS | ❌ NO — solo importa |
+
+### Workflow de Engram
+
+**Al empezar sesión** (lo PRIMERO después de `git pull`):
+```bash
+engram sync --import
+```
+Si falla por proyecto desconocido, crear el config:
+```bash
+echo '{"project_name":"activia-trace","version":1}' > .engram/config.json
+engram sync --import
+```
+
+**Al cerrar sesión / pushear** (architect SOLO):
+```bash
+engram sync
+git add .engram
+git commit -m "chore(engram): sync project memory"
+git push
+```
+
+**Alias recomendado** (configurar una sola vez):
+```bash
+git config alias.sync '!f() { if [ "$1" = "--import" ]; then git pull --ff-only && engram sync --import; else engram sync && git add .engram && { git diff --cached --quiet || git commit -m "chore(engram): sync project memory"; } && git push; fi; }; f'
+```
+Uso: `git sync --import` al arrancar, `git sync` al cerrar.
+
+---
+
 ## Reglas Duras (no negociables)
 
 Estas reglas son **contrato**. Romperlas es un defecto, no una decisión de estilo. Ante conflicto entre la KB y este archivo, prevalecen las reglas duras.
@@ -145,12 +196,22 @@ Antes de cualquier acción no trivial: identificá el nivel de governance del do
 ## Flujo de Trabajo
 
 ```
-1. Leer la KB relevante (knowledge-base/) + docs/ARQUITECTURA.md   → entender el dominio
-2. Identificar el change en CHANGES.md (C-NN) + sus dependencias    → respetar gates
-3. Verificar el nivel de governance del dominio                    → CRÍTICO = propuesta primero
-4. /opsx:propose C-NN-nombre                                        → proposal + design + specs + tasks
-5. Implementar las tasks (cargando skills, Strict TDD)             → respetando las reglas duras
-6. /opsx:archive C-NN-nombre + marcar [x] en CHANGES.md            → cerrar el change
+0. Al arrancar: git pull → leer .machine → engram sync --import → saber tu rol
+1. Leer la KB relevante (knowledge-base/) + docs/ARQUITECTURA.md
+2. Identificar el change en CHANGES.md (C-NN) + sus dependencias
+3. Verificar el nivel de governance del dominio
+4. [Architect] /opsx:propose C-NN → proposal + design + specs + tasks
+5. [Copilot / QA] Leer tasks.md + specs → implementar con Strict TDD
+6. [Architect] /opsx:archive C-NN + marcar [x] en CHANGES.md
+7. Antes de pushear: engram sync → commit .engram → git push
 ```
 
 Aplicá TODAS las reglas duras en cada paso. Ante conflicto entre la KB y este archivo, las reglas duras prevalecen.
+
+### Rol por change según Governance
+
+| Governance | Quién implementa |
+|------------|------------------|
+| **CRÍTICO** | Solo **architect** (Claude Pro) — requiere aprobación humana |
+| **MEDIO** | **copilot** (implementa con TDD, surfacea decisiones no obvias) |
+| **BAJO** | **copilot** o **qa** (autonomía total si pasan tests) |
