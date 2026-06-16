@@ -10,6 +10,12 @@
 .env
 .venv/
 
+# Python runtime
+__pycache__/
+*.pyc
+.coverage
+.pytest_cache/
+
 # OS / IDE
 Thumbs.db
 .DS_Store
