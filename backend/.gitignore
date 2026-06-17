@@ -6,6 +6,9 @@
 # PDF generado (es regenerable; descomentar si NO querés versionarlo)
 # activia-trace-documentacion.pdf
 
+# Python build artifacts
+*.egg-info/
+
 # OS / IDE
 Thumbs.db
 .DS_Store

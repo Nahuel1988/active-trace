@@ -1,4 +1,5 @@
 import os
+import uuid
 from pathlib import Path
 
 import pytest
@@ -61,3 +62,33 @@ async def db_session(db_engine) -> AsyncSession:
         yield session
     finally:
         await session.close()
+
+
+@pytest.fixture(scope="function")
+async def tenant_factory(db_session: AsyncSession):
+    """Fixture que crea un Tenant de prueba y retorna una factory function.
+
+    Uso:
+        tenant = await tenant_factory(db_session, slug="mi-slug")
+    """
+
+    async def _make_tenant(
+        session: AsyncSession | None = None,
+        slug: str | None = None,
+        nombre: str = "Test Tenant",
+    ) -> "Tenant":
+        from app.models.tenant import Tenant
+
+        sess = session or db_session
+        t = Tenant(
+            id=uuid.uuid4(),
+            slug=slug or f"test-{uuid.uuid4().hex[:8]}",
+            nombre=nombre,
+            activo=True,
+        )
+        sess.add(t)
+        await sess.commit()
+        await sess.refresh(t)
+        return t
+
+    return _make_tenant
