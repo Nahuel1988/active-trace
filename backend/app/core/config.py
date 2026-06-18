@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     secret_key: str = Field(min_length=32, alias="SECRET_KEY")
     encryption_key: str = Field(min_length=32, max_length=32, alias="ENCRYPTION_KEY")
     access_token_expire_minutes: int = Field(default=15, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
+    refresh_token_expire_days: int = Field(default=7, alias="REFRESH_TOKEN_EXPIRE_DAYS")
+    password_reset_expire_minutes: int = Field(default=15, alias="PASSWORD_RESET_EXPIRE_MINUTES")
+    twofa_challenge_expire_minutes: int = Field(default=5, alias="TWOFA_CHALLENGE_EXPIRE_MINUTES")
+    email_lookup_hmac_key: str = Field(min_length=16, alias="EMAIL_LOOKUP_HMAC_KEY")
 
     test_database_url: str | None = Field(default=None, alias="TEST_DATABASE_URL")
 

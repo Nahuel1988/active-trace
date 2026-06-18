@@ -13,7 +13,15 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.core.config import Settings
 from app.core.database import Base
-from app.models import Tenant  # noqa: F401 — register models in Base.metadata
+from app.models import (  # noqa: F401 — register models in Base.metadata
+    PasswordResetToken,
+    RefreshToken,
+    Role,
+    Tenant,
+    TotpSecret,
+    User,
+    UserRole,
+)
 
 config = context.config
 if config.config_file_name is not None:

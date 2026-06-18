@@ -8,6 +8,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import Settings
 from app.core.database import create_test_engine, create_session_factory
 
+# ---------------------------------------------------------------------------
+# Cargar .env.test a nivel de módulo (ANTES de cualquier fixture o import).
+# Esto es necesario porque app.core.security.encryption_service evalúa
+# Settings() en tiempo de importación (singleton module-level), y un fixture
+# session-scoped corre después de la colección de tests.
+# ---------------------------------------------------------------------------
+_test_env = Path(__file__).resolve().parent.parent / ".env.test"
+if _test_env.exists():
+    for _line in _test_env.read_text().splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith("#") and "=" in _line:
+            _key, _val = _line.split("=", 1)
+            os.environ.setdefault(_key.strip(), _val.strip().strip("\"'"))
+
+del _test_env
+
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption(
@@ -30,17 +46,6 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
     for item in items:
         if "requires_db" in item.keywords:
             item.add_marker(skip_db)
-
-
-@pytest.fixture(scope="session", autouse=True)
-def _set_env() -> None:
-    test_env = Path(__file__).resolve().parent.parent / ".env.test"
-    if test_env.exists():
-        for line in test_env.read_text().splitlines():
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                key, val = line.split("=", 1)
-                os.environ.setdefault(key.strip(), val.strip().strip("\"'"))
 
 
 @pytest.fixture(scope="session")
