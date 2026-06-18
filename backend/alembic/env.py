@@ -15,8 +15,10 @@ from app.core.config import Settings
 from app.core.database import Base
 from app.models import (  # noqa: F401 — register models in Base.metadata
     PasswordResetToken,
+    Permiso,
     RefreshToken,
     Role,
+    RolPermiso,
     Tenant,
     TotpSecret,
     User,

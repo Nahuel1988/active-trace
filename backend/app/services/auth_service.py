@@ -24,9 +24,12 @@ Uso::
 
 from uuid import UUID
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.core.security import email_lookup_hash, verify_password
+from app.models.role import Role, UserRole
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.services.token_service import AuthError, TokenService
@@ -86,6 +89,44 @@ class AuthService:
 
         return user
 
+    async def _get_vigentes_roles(
+        self,
+        *,
+        user_id: UUID,
+        tenant_id: UUID,
+        session: AsyncSession,
+    ) -> list[str]:
+        """Retorna los códigos de roles vigentes de un usuario.
+
+        Considera solo asignaciones ``UserRole`` vigentes (``desde ≤ now``
+        y (``hasta IS NULL`` o ``now < hasta``)), no soft-deleteadas y
+        dentro del tenant indicado.
+
+        Args:
+            user_id: UUID del usuario.
+            tenant_id: UUID del tenant.
+            session: Sesión de base de datos async.
+
+        Returns:
+            Lista de códigos de rol (ej: ``["profesor", "coordinador"]``).
+        """
+        from sqlalchemy import func as sa_func
+
+        now = sa_func.now()
+        stmt = (
+            select(Role.code)
+            .select_from(UserRole)
+            .join(Role, Role.id == UserRole.role_id)
+            .where(
+                UserRole.user_id == user_id,
+                UserRole.tenant_id == tenant_id,
+                UserRole.desde <= now,
+                (UserRole.hasta.is_(None)) | (UserRole.hasta > now),
+            )
+        )
+        result = await session.execute(stmt)
+        return [row[0] for row in result.fetchall()]
+
     async def login(
         self,
         email: str,
@@ -118,4 +159,9 @@ class AuthService:
             challenge = totp_service.create_challenge(user)
             return {"challenge": challenge, "type": "2fa_challenge"}
 
-        return await token_service.issue_token_pair(user, session)
+        roles = await self._get_vigentes_roles(
+            user_id=user.id,
+            tenant_id=user.tenant_id,
+            session=session,
+        )
+        return await token_service.issue_token_pair(user, session, roles=roles)

@@ -167,11 +167,18 @@ class TokenService:
             session=session,
         )
 
-        # 5. Emitir nuevo access token
+        # 5. Resolver roles vigentes para el access token
+        roles = await self._get_vigentes_roles(
+            user_id=existing.user_id,
+            tenant_id=tenant_id,
+            session=session,
+        )
+
+        # 6. Emitir nuevo access token
         access_token = encode_access_token(
             sub=str(existing.user_id),
             tenant_id=str(tenant_id),
-            roles=[],
+            roles=roles,
         )
 
         # 6. Generar y persistir nuevo refresh token (misma familia)
@@ -192,6 +199,36 @@ class TokenService:
             "refresh_token": new_raw_token,
             "token_type": "bearer",
         }
+
+    async def _get_vigentes_roles(
+        self,
+        *,
+        user_id: uuid.UUID,
+        tenant_id: uuid.UUID,
+        session: AsyncSession,
+    ) -> list[str]:
+        """Retorna los códigos de roles vigentes de un usuario.
+
+        Considera asignaciones ``UserRole`` vigentes dentro del tenant.
+        """
+        from sqlalchemy import func as sa_func, select
+
+        from app.models.role import Role, UserRole
+
+        now = sa_func.now()
+        stmt = (
+            select(Role.code)
+            .select_from(UserRole)
+            .join(Role, Role.id == UserRole.role_id)
+            .where(
+                UserRole.user_id == user_id,
+                UserRole.tenant_id == tenant_id,
+                UserRole.desde <= now,
+                (UserRole.hasta.is_(None)) | (UserRole.hasta > now),
+            )
+        )
+        result = await session.execute(stmt)
+        return [row[0] for row in result.fetchall()]
 
     async def revoke_session(
         self,
