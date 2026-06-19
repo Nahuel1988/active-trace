@@ -177,6 +177,55 @@ class UsuarioRepository(BaseRepository[User]):
         await session.refresh(user)
         return user
 
+    async def get_perfil(
+        self,
+        *,
+        tenant_id: UUID,
+        user_id: UUID,
+        session: AsyncSession,
+    ) -> Optional[User]:
+        """Alias semántico para obtener el perfil de un usuario.
+
+        Filtra por tenant_id (multi-tenancy) y excluye soft-deleted.
+
+        Args:
+            tenant_id: UUID del tenant de la sesión.
+            user_id: UUID del usuario cuyo perfil se lee.
+            session: Sesión async.
+
+        Returns:
+            User si existe y no está soft-deleted, None si no existe en el tenant.
+        """
+        return await self.get(id=user_id, tenant_id=tenant_id, session=session)
+
+    async def update_perfil(
+        self,
+        *,
+        tenant_id: UUID,
+        user_id: UUID,
+        data: Dict[str, Any],
+        session: AsyncSession,
+    ) -> Optional[User]:
+        """Actualiza los campos de perfil de un usuario (delega a update).
+
+        CUIL NO debe venir en data — si viene, lo ignora (no lo modifica).
+        La PII (dni, cbu, alias_cbu) se cifra automáticamente en update().
+
+        Args:
+            tenant_id: UUID del tenant de la sesión.
+            user_id: UUID del usuario.
+            data: Campos a actualizar (en claro para PII).
+            session: Sesión async.
+
+        Returns:
+            User actualizado o None si no existe en el tenant.
+        """
+        # CUIL es solo lectura para el dueño del perfil — nunca lo tocamos aquí
+        data.pop("cuil", None)
+        return await self.update(
+            id=user_id, tenant_id=tenant_id, data=data, session=session
+        )
+
     async def decrypt_pii(self, user: User) -> Dict[str, Optional[str]]:
         """Descifra y retorna los campos PII de un usuario.
 

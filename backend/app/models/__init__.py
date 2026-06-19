@@ -17,6 +17,8 @@ from app.models.tarea import Tarea, EstadoTarea
 from app.models.comentario_tarea import ComentarioTarea
 from app.models.aviso import Aviso, AlcanceAviso, SeveridadAviso
 from app.models.acknowledgment import AcknowledgmentAviso
+from app.models.hilo_mensaje import HiloMensaje
+from app.models.mensaje_interno import MensajeInterno
 
 __all__ = [
     "Tenant",
@@ -49,4 +51,6 @@ __all__ = [
     "AlcanceAviso",
     "SeveridadAviso",
     "AcknowledgmentAviso",
+    "HiloMensaje",
+    "MensajeInterno",
 ]

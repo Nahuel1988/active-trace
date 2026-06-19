@@ -14,6 +14,7 @@ creados en C-02.
 """
 
 import uuid
+from typing import Literal
 
 from sqlalchemy import Boolean, Index, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
@@ -119,6 +120,15 @@ class User(TenantScopedMixin, Base):
         Text,
         nullable=True,
         comment="Alias CBU cifrado AES-256-GCM (ciphertext en base64)",
+    )
+
+    # -----------------------------------------------------------------------
+    # Modalidad de cobro (C-20) — NULLABLE para convivencia con usuarios pre-existentes
+    # -----------------------------------------------------------------------
+    modalidad_cobro: Mapped[str | None] = mapped_column(
+        String(20),
+        nullable=True,
+        comment="Modalidad de cobro: 'factura' o 'liquidacion'",
     )
 
     @declared_attr
