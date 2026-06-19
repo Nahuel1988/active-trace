@@ -19,6 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings
 from app.core.dependencies import (
+    CurrentUser,
     get_current_user,
     get_db,
     get_settings,
@@ -97,7 +98,7 @@ async def get_current_user_from_challenge(  # noqa: RUF029
 @router.post("/enroll", response_model=TwoFAEnrollResponse)
 async def enroll_2fa(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: CurrentUser = Depends(get_current_user),
     totp_service: TotpService = Depends(get_totp_service),
 ) -> dict:
     """Enroll the authenticated user in 2FA.
@@ -113,7 +114,7 @@ async def enroll_2fa(
 async def confirm_2fa(
     body: TwoFAConfirmRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: CurrentUser = Depends(get_current_user),
     totp_service: TotpService = Depends(get_totp_service),
 ) -> dict:
     """Confirm 2FA enrollment with a TOTP code.

@@ -254,6 +254,102 @@ class TestGetCurrentUser:
         assert payload["sub"] != str(user2.id)
         assert payload["tenant_id"] != str(user2.tenant_id)
 
+    # ------------------------------------------------------------------
+    # 6.3 — CurrentUser extension (impersonation claims)
+    # ------------------------------------------------------------------
+
+    async def test_normal_token_impersonated_false(
+        self,
+        db_session: AsyncSession,
+        settings: Settings,
+        tenant_factory,
+    ) -> None:
+        """WHEN token normal, THEN get_current_user retorna
+        CurrentUser con impersonated=False y actor_id=user_id."""
+        from app.models.tenant import Tenant
+        from app.models.user import User
+
+        await _create_tables(settings, [Tenant.__table__, User.__table__])
+        tenant = await tenant_factory(session=db_session)
+        user = User(
+            email_encrypted="enc",
+            email_lookup=email_lookup_hash("normal@test.com"),
+            password_hash=hash_password("pass"),
+            tenant_id=tenant.id,
+        )
+        db_session.add(user)
+        await db_session.flush()
+        await db_session.refresh(user)
+
+        token = encode_access_token(
+            sub=str(user.id),
+            tenant_id=str(user.tenant_id),
+            roles=[],
+        )
+
+        from app.core.dependencies import get_current_user
+
+        current_user = await get_current_user(
+            authorization=f"Bearer {token}",
+            db=db_session,
+            settings=settings,
+        )
+
+        assert current_user.impersonated is False
+        assert current_user.actor_id == user.id
+
+    async def test_impersonation_token_has_correct_claims(
+        self,
+        db_session: AsyncSession,
+        settings: Settings,
+        tenant_factory,
+    ) -> None:
+        """WHEN token de impersonación, THEN get_current_user retorna
+        CurrentUser con impersonated=True y actor_id del admin."""
+        from app.models.tenant import Tenant
+        from app.models.user import User
+
+        await _create_tables(settings, [Tenant.__table__, User.__table__])
+        tenant = await tenant_factory(session=db_session)
+
+        admin = User(
+            email_encrypted="enc-admin",
+            email_lookup=email_lookup_hash("admin@test.com"),
+            password_hash=hash_password("pass-admin"),
+            tenant_id=tenant.id,
+        )
+        impersonated = User(
+            email_encrypted="enc-imp",
+            email_lookup=email_lookup_hash("imp@test.com"),
+            password_hash=hash_password("pass-imp"),
+            tenant_id=tenant.id,
+        )
+        db_session.add_all([admin, impersonated])
+        await db_session.flush()
+        await db_session.refresh(admin)
+        await db_session.refresh(impersonated)
+
+        token = encode_access_token(
+            sub=str(impersonated.id),
+            tenant_id=str(impersonated.tenant_id),
+            roles=[],
+            impersonated=True,
+            actor_id=str(admin.id),
+        )
+
+        from app.core.dependencies import get_current_user
+
+        current_user = await get_current_user(
+            authorization=f"Bearer {token}",
+            db=db_session,
+            settings=settings,
+        )
+
+        assert current_user.impersonated is True
+        assert current_user.actor_id == admin.id
+        # The CurrentUser wraps the impersonated user (sub from token)
+        assert current_user.id == impersonated.id
+
 
 # ===========================================================================
 # 6.4 — Endpoint integration

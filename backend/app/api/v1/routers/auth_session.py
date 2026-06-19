@@ -16,6 +16,7 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import (
+    CurrentUser,
     get_auth_service,
     get_current_user,
     get_db,
@@ -23,7 +24,6 @@ from app.core.dependencies import (
     get_totp_service,
 )
 from app.core.rate_limit import LOGIN_RATE_LIMIT, limiter, login_key_func
-from app.models.user import User
 from app.schemas.auth import (
     LoginRequest,
     LogoutRequest,
@@ -103,7 +103,7 @@ async def refresh(
 async def logout(
     body: LogoutRequest,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: CurrentUser = Depends(get_current_user),
     token_service: TokenService = Depends(get_token_service),
 ) -> dict:
     """Revoke refresh token family (logout)."""

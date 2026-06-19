@@ -99,16 +99,16 @@ class TestMigration003Upgrade:
     """Scenario: Aplicar migration 003 desde 002."""
 
     async def test_upgrade_creates_rbac_tables(self):
-        """WHEN corremos upgrade head, THEN permiso y rol_permiso existen."""
-        _alembic("upgrade", "head")
+        """WHEN corremos upgrade a 003, THEN permiso y rol_permiso existen."""
+        _alembic("upgrade", "d4f8e2c9a1b0")
 
         tables = await _get_tables()
         for table in RBAC_TABLES:
             assert table in tables, f"Tabla '{table}' no fue creada por migration 003"
 
     async def test_upgrade_sets_alembic_version(self):
-        """WHEN upgrade head, THEN alembic_version apunta a 003."""
-        _alembic("upgrade", "head")
+        """WHEN upgrade a 003, THEN alembic_version apunta a 003."""
+        _alembic("upgrade", "d4f8e2c9a1b0")
 
         version = await _get_alembic_version()
         assert version == "d4f8e2c9a1b0"
@@ -128,7 +128,7 @@ class TestMigration003Upgrade:
         finally:
             await conn.close()
 
-        _alembic("upgrade", "head")
+        _alembic("upgrade", "d4f8e2c9a1b0")
 
         conn = await asyncpg.connect(DATABASE_URL)
         try:
@@ -156,9 +156,9 @@ class TestMigration003Upgrade:
         finally:
             await conn.close()
 
-        _alembic("upgrade", "head")
+        _alembic("upgrade", "d4f8e2c9a1b0")
         _alembic("downgrade", "87ff312e2a56")
-        _alembic("upgrade", "head")  # Segunda aplicación
+        _alembic("upgrade", "d4f8e2c9a1b0")  # Segunda aplicación
 
         conn = await asyncpg.connect(DATABASE_URL)
         try:
@@ -174,7 +174,7 @@ class TestMigration003Upgrade:
 
     async def test_permiso_check_constraint_validates_format(self):
         """WHEN se intenta insertar code inválido, THEN CHECK constraint lo rechaza."""
-        _alembic("upgrade", "head")
+        _alembic("upgrade", "d4f8e2c9a1b0")
 
         conn = await asyncpg.connect(DATABASE_URL)
         try:
@@ -195,7 +195,7 @@ class TestMigration003Upgrade:
 
     async def test_rol_permiso_scope_check_constraint(self):
         """WHEN se intenta insertar scope inválido, THEN CHECK constraint lo rechaza."""
-        _alembic("upgrade", "head")
+        _alembic("upgrade", "d4f8e2c9a1b0")
 
         conn = await asyncpg.connect(DATABASE_URL)
         try:
@@ -219,8 +219,8 @@ class TestMigration003Downgrade:
 
     async def test_downgrade_removes_rbac_tables(self):
         """GIVEN migration 003 aplicada, WHEN downgrade -1, THEN tablas eliminadas."""
-        _alembic("upgrade", "head")
-        _alembic("downgrade", "-1")
+        _alembic("upgrade", "d4f8e2c9a1b0")
+        _alembic("downgrade", "87ff312e2a56")
 
         tables = await _get_tables()
         for table in RBAC_TABLES:
@@ -228,8 +228,8 @@ class TestMigration003Downgrade:
 
     async def test_downgrade_keeps_auth_tables(self):
         """WHEN downgrade -1, THEN tablas de auth persisten."""
-        _alembic("upgrade", "head")
-        _alembic("downgrade", "-1")
+        _alembic("upgrade", "d4f8e2c9a1b0")
+        _alembic("downgrade", "87ff312e2a56")
 
         tables = await _get_tables()
         for table in ["role", "user", "refresh_token", "user_role"]:
@@ -237,17 +237,17 @@ class TestMigration003Downgrade:
 
     async def test_downgrade_sets_version_to_002(self):
         """WHEN downgrade -1, THEN alembic_version vuelve a 002."""
-        _alembic("upgrade", "head")
-        _alembic("downgrade", "-1")
+        _alembic("upgrade", "d4f8e2c9a1b0")
+        _alembic("downgrade", "87ff312e2a56")
 
         version = await _get_alembic_version()
         assert version == "87ff312e2a56"
 
     async def test_downgrade_reapply_is_idempotent(self):
         """GIVEN upgrade → downgrade → upgrade, THEN todo funciona de nuevo."""
-        _alembic("upgrade", "head")
-        _alembic("downgrade", "-1")
-        _alembic("upgrade", "head")
+        _alembic("upgrade", "d4f8e2c9a1b0")
+        _alembic("downgrade", "87ff312e2a56")
+        _alembic("upgrade", "d4f8e2c9a1b0")
 
         tables = await _get_tables()
         for table in ["permiso", "rol_permiso"]:

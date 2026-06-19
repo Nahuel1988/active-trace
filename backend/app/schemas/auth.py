@@ -175,3 +175,16 @@ class CurrentUserResponse(BaseModel):
     user_id: str
     tenant_id: str
     roles: list[str]
+
+
+class ImpersonationTokenResponse(BaseModel):
+    """Response after successful impersonation start (POST).
+
+    Contains an access token that acts as the impersonated user
+    plus metadata identifying the impersonation session.
+    """
+    model_config = ConfigDict(extra='forbid')
+
+    access_token: str
+    token_type: str = 'bearer'
+    impersonated_user_id: str

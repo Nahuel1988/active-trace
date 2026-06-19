@@ -88,12 +88,12 @@ async def _drop_all_auth_tables():
 async def reset_to_001():
     """Fixture que asegura que arrancamos en migration 001 (solo tenant).
 
-    Si estamos en head (002), hace downgrade -1.
+    Si estamos en head (002+), hace downgrade.
     Si estamos en 001, no hace nada.
     """
     version = await _get_alembic_version()
     if version is None:
-        # Sin version → aplicar 001 primero
+        # Arrancar desde 001 y aplicar 002
         _alembic("upgrade", "ce9effa4bfdd")
     elif version != "ce9effa4bfdd":
         # Estamos en 002 o superior → downgrade
@@ -111,8 +111,8 @@ class TestMigration002Upgrade:
     """Scenario: Aplicar migration 002 desde 001."""
 
     async def test_upgrade_creates_all_auth_tables(self):
-        """WHEN corremos upgrade head, THEN las 6 tablas de auth existen."""
-        _alembic("upgrade", "head")
+        """WHEN corremos upgrade a 002, THEN las 6 tablas de auth existen."""
+        _alembic("upgrade", "87ff312e2a56")
 
         tables = await _get_tables()
         for table in AUTH_TABLES:
@@ -127,11 +127,11 @@ class TestMigration002Upgrade:
         assert version == "87ff312e2a56"
 
     async def test_upgrade_key_constraints_exist(self):
-        """WHEN upgrade head, THEN cada tabla tiene sus constraints.
+        """WHEN upgrade a 002, THEN cada tabla tiene sus constraints.
 
         Verifica PK, FKs y UNIQUE esperados.
         """
-        _alembic("upgrade", "head")
+        _alembic("upgrade", "87ff312e2a56")
 
         conn = await asyncpg.connect(DATABASE_URL)
         try:

@@ -6,6 +6,7 @@ from app.models.permiso import Permiso, RolPermiso
 from app.models.refresh_token import RefreshToken
 from app.models.totp_secret import TotpSecret
 from app.models.password_reset_token import PasswordResetToken
+from app.models.audit_log import AuditLog
 
 __all__ = [
     "Tenant",
@@ -18,4 +19,5 @@ __all__ = [
     "RefreshToken",
     "TotpSecret",
     "PasswordResetToken",
+    "AuditLog",
 ]

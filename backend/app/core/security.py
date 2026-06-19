@@ -72,23 +72,47 @@ def verify_password(password: str, hash_value: str) -> bool:
 # ---------------------------------------------------------------------------
 
 
-def encode_access_token(sub: str, tenant_id: str, roles: list[str]) -> str:
+def encode_access_token(
+    sub: str,
+    tenant_id: str,
+    roles: list[str],
+    *,
+    impersonated: bool = False,
+    actor_id: str | None = None,
+) -> str:
     """Emite un JWT access token firmado con HS256.
 
     Claims mínimos: sub, tenant_id, roles, exp, iat, type='access'.
+
+    En sesiones de impersonación incluye además ``impersonated=true``
+    y ``actor_id`` (UUID del usuario real que impersona).
+
+    Args:
+        sub: UUID del usuario (string).
+        tenant_id: UUID del tenant (string).
+        roles: Lista de códigos de rol.
+        impersonated: ``True`` si es un token de impersonación.
+        actor_id: UUID del actor real (string). Si es ``None``
+            en impersonación, se usa ``sub``.
     """
     settings = Settings()
     now = datetime.now(timezone.utc)
-    payload = {
+    payload: dict = {
         "sub": sub,
         "tenant_id": tenant_id,
         "roles": roles,
         "type": "access",
+        "impersonated": impersonated,
         "iat": int(now.timestamp()),
         "exp": int(
             (now + timedelta(minutes=settings.access_token_expire_minutes)).timestamp()
         ),
     }
+    # En sesión normal, actor_id = sub (misma identidad)
+    if impersonated:
+        payload["actor_id"] = actor_id or sub
+    else:
+        payload["actor_id"] = sub
     return jwt.encode(payload, settings.secret_key, algorithm="HS256")
 
 

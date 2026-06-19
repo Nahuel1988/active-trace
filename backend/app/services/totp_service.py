@@ -16,6 +16,7 @@ import jwt
 import pyotp
 
 from app.core.config import Settings
+from app.core.dependencies import CurrentUser
 from app.core.security import EncryptionService
 from app.models.user import User
 from app.repositories.totp_secret_repository import TotpSecretRepository
@@ -33,7 +34,7 @@ class TotpService:
         self._repo = totp_repo
         self._encryption = encryption_service
 
-    async def enroll(self, user: User, session: AsyncSession) -> dict:
+    async def enroll(self, user: CurrentUser, session: AsyncSession) -> dict:
         """Generate and persist a TOTP secret for *user*.
 
         Does **not** set ``user.totp_enabled`` — that happens at confirm.
@@ -56,7 +57,7 @@ class TotpService:
         )
         return {"secret": secret, "otpauth_uri": uri}
 
-    async def confirm(self, user: User, code: str, session: AsyncSession) -> bool:
+    async def confirm(self, user: CurrentUser, code: str, session: AsyncSession) -> bool:
         """Confirm 2FA enrollment by verifying a TOTP code.
 
         Uses ``valid_window=1`` for clock drift tolerance.

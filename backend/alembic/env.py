@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from app.core.config import Settings
 from app.core.database import Base
 from app.models import (  # noqa: F401 — register models in Base.metadata
+    AuditLog,
     PasswordResetToken,
     Permiso,
     RefreshToken,

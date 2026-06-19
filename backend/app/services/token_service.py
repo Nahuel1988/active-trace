@@ -20,6 +20,8 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings
+from uuid import UUID
+
 from app.core.security import (
     encode_access_token,
     generate_opaque_token,
@@ -66,6 +68,9 @@ class TokenService:
         user: User,
         session: AsyncSession,
         roles: list[str] | None = None,
+        *,
+        impersonated: bool = False,
+        actor_id: UUID | None = None,
     ) -> dict:
         """Emite un par access token (JWT) + refresh token (opaco).
 
@@ -73,6 +78,8 @@ class TokenService:
             user: Usuario autenticado (se usa **id**, **tenant_id**).
             session: Sesión de base de datos async.
             roles: Lista de roles del usuario (opcional; defaults a []).
+            impersonated: ``True`` si el token es de impersonación.
+            actor_id: UUID del actor real (para impersonación).
 
         Returns:
             ``{"access_token": str, "refresh_token": str, "token_type": "bearer"}``
@@ -85,6 +92,8 @@ class TokenService:
             sub=str(user.id),
             tenant_id=str(user.tenant_id),
             roles=roles or [],
+            impersonated=impersonated,
+            actor_id=str(actor_id) if actor_id else None,
         )
 
         # 2. Opaque refresh token + hash
@@ -168,7 +177,7 @@ class TokenService:
         )
 
         # 5. Resolver roles vigentes para el access token
-        roles = await self._get_vigentes_roles(
+        roles = await self.get_vigentes_roles(
             user_id=existing.user_id,
             tenant_id=tenant_id,
             session=session,
@@ -200,7 +209,7 @@ class TokenService:
             "token_type": "bearer",
         }
 
-    async def _get_vigentes_roles(
+    async def get_vigentes_roles(
         self,
         *,
         user_id: uuid.UUID,

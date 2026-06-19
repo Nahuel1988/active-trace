@@ -6,6 +6,7 @@ autenticado (``get_current_user``).
 
 from collections.abc import AsyncGenerator
 from functools import lru_cache
+from typing import Any
 from uuid import UUID
 
 from fastapi import Depends, Header, HTTPException
@@ -14,6 +15,60 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 from app.core.config import Settings
 from app.core.database import create_engine, create_session_factory
 from app.core.security import decode_token
+
+
+class CurrentUser:
+    """Usuario autenticado extendido con información de impersonación.
+
+    Envuelve una instancia de ``User`` (SQLAlchemy) y delega el acceso a
+    atributos del modelo ORM (``id``, ``tenant_id``, ``is_active``, etc.)
+    al objeto subyacente.  Esto permite que servicios existentes que reciben
+    ``current_user: User`` sigan funcionando sin cambios.
+
+    Atributos adicionales (no ORM):
+        impersonated: ``True`` si la sesión actual es de impersonación.
+        actor_id: UUID del usuario real que ejecuta la acción (para
+            impersonación; en sesiones normales es igual a ``user.id``).
+
+    Uso::
+
+        async def mi_endpoint(
+            current_user: CurrentUser = Depends(get_current_user),
+        ) -> dict:
+            if current_user.impersonated:
+                logger.info("Operación como %s por %s", current_user.id, current_user.actor_id)
+    """
+
+    def __init__(
+        self,
+        user: Any,
+        *,
+        impersonated: bool = False,
+        actor_id: UUID | None = None,
+    ) -> None:
+        object.__setattr__(self, "_user", user)
+        object.__setattr__(self, "impersonated", impersonated)
+        object.__setattr__(
+            self,
+            "actor_id",
+            actor_id if actor_id is not None else user.id,
+        )
+
+    def __getattr__(self, name: str) -> Any:
+        if name in ("impersonated", "actor_id", "_user"):
+            return object.__getattribute__(self, name)
+        return getattr(self._user, name)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name in ("impersonated", "actor_id"):
+            object.__setattr__(self, name, value)
+        else:
+            setattr(self._user, name, value)
+
+    def __repr__(self) -> str:
+        user_id = self._user.id
+        flag = " [IMP]" if self.impersonated else ""
+        return f"<CurrentUser id={user_id} actor={self.actor_id}{flag}>"
 
 
 # ---------------------------------------------------------------------------
@@ -81,22 +136,23 @@ def get_totp_service() -> "TotpService":  # noqa: F821
 # ---------------------------------------------------------------------------
 
 
-async def get_current_user(  # noqa: RUF029
+async def get_current_user(
     authorization: str | None = Header(default=None),
     db: AsyncSession = Depends(get_db),
     settings: Settings = Depends(get_settings),
-) -> "User":  # noqa: F821
-    """Extract the authenticated user from the JWT access token.
+) -> CurrentUser:
+    """Extrae el usuario autenticado desde el JWT access token.
 
-    Reads the ``Authorization: Bearer <token>`` header, decodes the
-    token, and returns the corresponding ``User`` object.
+    Lee el header ``Authorization: Bearer <token>``, decodifica el token,
+    carga el ``User`` desde la base de datos y lo envuelve en un
+    ``CurrentUser`` con información de impersonación.
 
-    **Security invariant**: identity is ALWAYS taken from the JWT, never
-    from URL / body / query parameters.
+    **Security invariant**: la identidad SIEMPRE se toma del JWT, nunca
+    de URL / body / query parameters.
 
     Raises
-        HTTPException 401: if the token is missing, invalid, or the
-            user does not exist / is inactive.
+        HTTPException 401: si el token falta, es inválido, o el usuario
+            no existe / está inactivo.
     """
     if authorization is None:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -129,4 +185,12 @@ async def get_current_user(  # noqa: RUF029
     if not user.is_active:
         raise HTTPException(status_code=401, detail="User is inactive")
 
-    return user
+    impersonated = payload.get("impersonated", False)
+    actor_id_raw = payload.get("actor_id")
+    actor_id: UUID | None = UUID(actor_id_raw) if actor_id_raw else None
+
+    return CurrentUser(
+        user=user,
+        impersonated=impersonated,
+        actor_id=actor_id,
+    )
