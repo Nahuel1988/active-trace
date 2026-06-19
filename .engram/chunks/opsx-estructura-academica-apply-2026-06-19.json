@@ -1,0 +1,16 @@
+{
+  "title": "Apply OPSX migration 005_estructura_academica to test DB",
+  "type": "bugfix",
+  "scope": "project",
+  "topic_key": "opsx/estructura-academica/apply",
+  "content": {
+    "What": "Applied migration 005_estructura_academica to the test database via Alembic using a temporary ini and verified schema tables exist.",
+    "Why": "Task 2.3 of the OPSX workflow required applying the migration to the test DB to validate the new academic structure before further tasks.",
+    "Where": [
+      "backend/alembic/versions/005_estructura_academica.py",
+      "backend/tmp_alembic.ini",
+      "backend/scripts/check_tables_async.py"
+    ],
+    "Learned": "Migration applied successfully and verification confirmed presence of tables carrera, cohorte, materia. Using a temporary alembic.ini for test DB was effective; remember to remove or document tmp_alembic.ini if it's temporary."
+  }
+}

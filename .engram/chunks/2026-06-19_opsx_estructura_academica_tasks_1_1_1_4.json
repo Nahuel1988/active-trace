@@ -1,0 +1,22 @@
+{
+  "title": "OPSX: tasks 1.1-1.4 completed for estructura-academica",
+  "type": "decision",
+  "scope": "project",
+  "topic_key": "opsx/estructura-academica/apply",
+  "timestamp": "2026-06-19T00:00:00Z",
+  "content": {
+    "What": "Completed OPSX tasks 1.1-1.4: created Carrera, Cohorte, Materia models and tests; registered models; updated tasks.md.",
+    "Why": "Progressing the 'estructura-academica' OpenSpec change: these tasks implement the domain models and unit tests required by the change's initial steps.",
+    "Where": [
+      "backend/app/models/carrera.py",
+      "backend/app/models/cohorte.py",
+      "backend/app/models/materia.py",
+      "backend/app/models/__init__.py",
+      "backend/tests/test_model_carrera.py",
+      "backend/tests/test_model_cohorte.py",
+      "backend/tests/test_model_materia.py",
+      "openspec/changes/estructura-academica/tasks.md"
+    ],
+    "Learned": "Models and tests created and registered; no non-obvious issues encountered during implementation of these tasks."
+  }
+}

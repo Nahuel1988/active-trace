@@ -13,6 +13,7 @@ from app.api.v1.routers.health import router as health_router
 from app.api.v1.routers.impersonation import router as impersonation_router
 from app.api.v1.routers.password_reset import router as password_reset_router
 from app.api.v1.routers.rbac import router as rbac_router
+from app.api.v1.routers.estructura import router as estructura_router
 from app.core.dependencies import get_engine, get_settings
 from app.core.logging import setup_json_logging
 from app.core.observability import setup_observability
@@ -43,6 +44,7 @@ def create_app() -> FastAPI:
     app.include_router(impersonation_router)
     app.include_router(password_reset_router)
     app.include_router(rbac_router)
+    app.include_router(estructura_router)
     return app
 
 

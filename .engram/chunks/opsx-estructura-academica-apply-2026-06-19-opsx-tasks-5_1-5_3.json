@@ -1,0 +1,22 @@
+{
+  "title": "Save OPSX tasks 5.1-5.3 completed for estructura-academica — Implemented CarreraService, CohorteService, MateriaService and tests",
+  "type": "task",
+  "scope": "project",
+  "topic_key": "opsx/estructura-academica/apply",
+  "when": "2026-06-19T00:00:00Z",
+  "what": "Implemented CarreraService, CohorteService, MateriaService and accompanying tests for tasks 5.1-5.3 of the estructura-academica OPSX change.",
+  "why": "To complete OPSX implementation tasks 5.1-5.3 which add core services for the estructura-academica module and ensure they're covered by unit tests.",
+  "where": [
+    "backend/app/services/carrera_service.py",
+    "backend/app/services/cohorte_service.py",
+    "backend/app/services/materia_service.py",
+    "backend/tests/test_services_carrera.py",
+    "backend/tests/test_services_cohorte.py",
+    "backend/tests/test_services_materia.py"
+  ],
+  "learned": "No unexpected issues were encountered; tests cover service behaviors. Follow-up: ensure migrations and repository layer align with service contracts if later changes surface.",
+  "meta": {
+    "author": "agent",
+    "method": "mem_save_via_chunk_add"
+  }
+}

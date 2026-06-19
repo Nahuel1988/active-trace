@@ -1,0 +1,2 @@
+{"title":"OPSX: apply progress for estructura-academica","type":"decision","scope":"project","topic_key":"opsx/estructura-academica/apply","content":{"What":"Paused after creating models, routers, tests and partial migration file. Waiting for user to continue from CLAUDE code.","Why":"User requested a mem_save before switching to CLAUDE code","Where":"openspec/changes/estructura-academica and backend/","Learned":"Alembic tmp INI minimal approach failed; need to use full alembic.ini copy with DB URL replaced."}
+}

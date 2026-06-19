@@ -54,9 +54,32 @@ def settings() -> Settings:
 
 
 @pytest.fixture(scope="session")
-def db_engine(settings: Settings):
+async def db_engine(settings: Settings):
+    """Engine async session-scoped.
+
+    Debe ser async para que asyncpg cree las conexiones TCP dentro del mismo
+    event loop que usarán los tests. En Windows con IocpProactor, un engine
+    creado fuera del event loop no puede conectarse a Docker via asyncpg
+    (WinError 64 / ConnectionResetError).
+    """
+    import app.models  # noqa: F401 — registra todos los modelos en Base.metadata
+
+    from app.core.database import Base
+
     url = settings.test_database_url or settings.database_url
-    return create_test_engine(url)
+    engine = create_test_engine(url)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield engine
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    await engine.dispose()
+
+
+@pytest.fixture(scope="session")
+async def create_test_schema(db_engine):
+    """Fixture de compatibilidad: el schema ya fue creado por db_engine."""
+    yield
 
 
 @pytest.fixture(scope="function")

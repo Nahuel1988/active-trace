@@ -25,6 +25,8 @@ services:
       - ./backend/.env
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend:/app:delegated
 
   worker:
     build:
@@ -35,6 +37,22 @@ services:
     env_file:
       - ./backend/.env
     command: ["python", "-m", "app.workers.main"]
+    volumes:
+      - ./backend:/app:delegated
+
+  test:
+    build:
+      context: ./backend
+      target: dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app:delegated
+    profiles:
+      - test
 
   frontend:
     image: node:20-alpine

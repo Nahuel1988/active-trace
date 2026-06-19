@@ -7,6 +7,9 @@ from app.models.refresh_token import RefreshToken
 from app.models.totp_secret import TotpSecret
 from app.models.password_reset_token import PasswordResetToken
 from app.models.audit_log import AuditLog
+from app.models.carrera import Carrera, EstadoCarrera
+from app.models.cohorte import Cohorte
+from app.models.materia import Materia, EstadoMateria
 
 __all__ = [
     "Tenant",
@@ -20,4 +23,9 @@ __all__ = [
     "TotpSecret",
     "PasswordResetToken",
     "AuditLog",
+    "Carrera",
+    "EstadoCarrera",
+    "Cohorte",
+    "Materia",
+    "EstadoMateria",
 ]

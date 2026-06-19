@@ -1,0 +1,19 @@
+{
+  "id": "opsx-estructura-academica-apply-2026-06-19-opsx-tasks-4_1-4_3",
+  "title": "OPSX: tasks 4.1-4.3 completed for estructura-academica — Created repositories and tests",
+  "type": "bugfix",
+  "scope": "project",
+  "topic_key": "opsx/estructura-academica/apply",
+  "content": {
+    "what": "Created repositories for carrera, cohorte, materia and tests; ran test suite and it passed.",
+    "why": "Completed OPSX tasks 4.1-4.3 which implement repository layer for estructura-academica change.",
+    "where": [
+      "backend/app/repositories/carrera_repository.py",
+      "backend/app/repositories/cohorte_repository.py",
+      "backend/app/repositories/materia_repository.py",
+      "backend/tests/test_repositories_estructura.py"
+    ],
+    "learned": "Repositories follow project conventions: repositories-only DB access; tests exercise tenant-scoped queries."
+  },
+  "timestamp": "2026-06-19T00:00:00Z"
+}
