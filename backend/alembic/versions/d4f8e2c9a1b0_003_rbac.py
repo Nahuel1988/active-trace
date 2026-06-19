@@ -92,8 +92,13 @@ _MATRIZ: list[tuple[str, str, str]] = [
     ("coordinador", "avisos:publicar", "global"),
     ("coordinador", "equipos:asignar", "global"),
     ("coordinador", "auditoria:ver", "propio"),
-    # NEXO (solo transversales — confirmar PA-25)
+    # NEXO (enlace transversal institución ↔ docentes/alumnos)
     ("nexo", "avisos:confirmar", "global"),
+    ("nexo", "avisos:publicar", "global"),
+    ("nexo", "comunicacion:enviar", "global"),
+    ("nexo", "atrasados:ver", "global"),
+    ("nexo", "tareas:gestionar", "global"),
+    ("nexo", "equipos:asignar", "global"),
     # ADMIN
     ("admin", "avisos:confirmar", "global"),
     ("admin", "calificaciones:importar", "global"),

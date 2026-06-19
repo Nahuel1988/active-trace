@@ -119,8 +119,8 @@ class TestMigration002Upgrade:
             assert table in tables, f"Tabla '{table}' no fue creada por migration 002"
 
     async def test_upgrade_sets_alembic_version(self):
-        """WHEN upgrade head, THEN alembic_version apunta a 002."""
-        _alembic("upgrade", "head")
+        """WHEN upgrade a 002, THEN alembic_version apunta a 002."""
+        _alembic("upgrade", "87ff312e2a56")
 
         version = await _get_alembic_version()
         assert version is not None
@@ -213,36 +213,36 @@ class TestMigration002Downgrade:
     """Scenario: Revertir migration 002 desde 002 a 001."""
 
     async def test_downgrade_removes_all_auth_tables(self):
-        """GIVEN migration 002 aplicada, WHEN downgrade -1, THEN tablas eliminadas."""
-        _alembic("upgrade", "head")
-        _alembic("downgrade", "-1")
+        """GIVEN migration 002 aplicada, WHEN downgrade a 001, THEN tablas eliminadas."""
+        _alembic("upgrade", "87ff312e2a56")
+        _alembic("downgrade", "ce9effa4bfdd")
 
         tables = await _get_tables()
         for table in AUTH_TABLES:
             assert table not in tables, f"Tabla '{table}' no fue eliminada por downgrade"
 
     async def test_downgrade_keeps_tenant_table(self):
-        """WHEN downgrade -1, THEN tabla tenant y alembic_version persisten."""
-        _alembic("upgrade", "head")
-        _alembic("downgrade", "-1")
+        """WHEN downgrade a 001, THEN tabla tenant y alembic_version persisten."""
+        _alembic("upgrade", "87ff312e2a56")
+        _alembic("downgrade", "ce9effa4bfdd")
 
         tables = await _get_tables()
         assert "tenant" in tables, "Tenant table debe persistir tras downgrade"
         assert "alembic_version" in tables, "alembic_version debe persistir"
 
     async def test_downgrade_sets_version_to_001(self):
-        """WHEN downgrade -1, THEN alembic_version vuelve a 001."""
-        _alembic("upgrade", "head")
-        _alembic("downgrade", "-1")
+        """WHEN downgrade a 001, THEN alembic_version vuelve a 001."""
+        _alembic("upgrade", "87ff312e2a56")
+        _alembic("downgrade", "ce9effa4bfdd")
 
         version = await _get_alembic_version()
         assert version == "ce9effa4bfdd"
 
     async def test_downgrade_reapply_upgrade_is_idempotent(self):
         """GIVEN upgrade → downgrade → upgrade, THEN todo funciona de nuevo."""
-        _alembic("upgrade", "head")
-        _alembic("downgrade", "-1")
-        _alembic("upgrade", "head")
+        _alembic("upgrade", "87ff312e2a56")
+        _alembic("downgrade", "ce9effa4bfdd")
+        _alembic("upgrade", "87ff312e2a56")
 
         tables = await _get_tables()
         for table in AUTH_TABLES:

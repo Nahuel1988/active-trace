@@ -232,8 +232,13 @@ MATRIZ_BASE: list[tuple[str, str, str]] = [
     (ROLE_COORDINADOR, "avisos:publicar", "global"),
     (ROLE_COORDINADOR, "equipos:asignar", "global"),
     (ROLE_COORDINADOR, "auditoria:ver", "propio"),
-    # -- NEXO (solo transversales — confirmar PA-25) --
+    # -- NEXO (enlace transversal institución ↔ docentes/alumnos) --
     (ROLE_NEXO, "avisos:confirmar", "global"),
+    (ROLE_NEXO, "avisos:publicar", "global"),
+    (ROLE_NEXO, "comunicacion:enviar", "global"),
+    (ROLE_NEXO, "atrasados:ver", "global"),
+    (ROLE_NEXO, "tareas:gestionar", "global"),
+    (ROLE_NEXO, "equipos:asignar", "global"),
     # -- ADMIN --
     (ROLE_ADMIN, "avisos:confirmar", "global"),
     (ROLE_ADMIN, "calificaciones:importar", "global"),

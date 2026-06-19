@@ -3,9 +3,14 @@
 Requiere PostgreSQL corriendo (--run-db).
 """
 
+import uuid
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 from httpx import ASGITransport, AsyncClient
 
+from app.core.dependencies import get_current_user
+from app.core.permissions import PermissionGrant
 from app.main import create_app
 
 pytestmark = pytest.mark.requires_db
@@ -23,6 +28,49 @@ async def client(app):
         yield ac
 
 
+@pytest.fixture
+def _mock_user():
+    user = MagicMock()
+    user.id = uuid.uuid4()
+    user.tenant_id = uuid.uuid4()
+    return user
+
+
+@pytest.fixture
+async def client_no_perm(app, _mock_user):
+    """Client con identidad válida pero sin el permiso usuarios:gestionar."""
+    async def _get_user():
+        return _mock_user
+
+    app.dependency_overrides[get_current_user] = _get_user
+    transport = ASGITransport(app=app)
+    with patch(
+        "app.services.permission_service.PermissionService.verify_permission",
+        new=AsyncMock(return_value=None),
+    ):
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
+            yield ac
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+async def client_with_perm(app, _mock_user):
+    """Client con identidad válida Y con el permiso usuarios:gestionar."""
+    async def _get_user():
+        return _mock_user
+
+    app.dependency_overrides[get_current_user] = _get_user
+    grant = PermissionGrant(code="usuarios:gestionar", scope="global")
+    transport = ASGITransport(app=app)
+    with patch(
+        "app.services.permission_service.PermissionService.verify_permission",
+        new=AsyncMock(return_value=grant),
+    ):
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
+            yield ac
+    app.dependency_overrides.clear()
+
+
 class TestRbacEndpoints:
     """Scenario: Endpoints de administración RBAC protegidos por usuarios:gestionar."""
 
@@ -31,20 +79,16 @@ class TestRbacEndpoints:
         response = await client.get("/api/v1/rbac/permisos")
         assert response.status_code == 401
 
-    async def test_listar_permisos_sin_permiso_retorna_403(self, client: AsyncClient) -> None:
+    async def test_listar_permisos_sin_permiso_retorna_403(self, client_no_perm: AsyncClient) -> None:
         """WHEN usuario autenticado sin usuarios:gestionar, THEN 403."""
-        response = await client.get(
-            "/api/v1/rbac/permisos",
-            headers={"Authorization": "Bearer token-sin-permiso"},
-        )
+        response = await client_no_perm.get("/api/v1/rbac/permisos")
         assert response.status_code == 403
 
-    async def test_crear_permiso_campo_extra_retorna_422(self, client: AsyncClient) -> None:
+    async def test_crear_permiso_campo_extra_retorna_422(self, client_with_perm: AsyncClient) -> None:
         """WHEN body con campo no declarado, THEN 422 (extra='forbid')."""
-        response = await client.post(
+        response = await client_with_perm.post(
             "/api/v1/rbac/permisos",
             json={"modulo": "test", "accion": "test", "campo_extra": "x"},
-            headers={"Authorization": "Bearer token-valido"},
         )
         assert response.status_code == 422
 

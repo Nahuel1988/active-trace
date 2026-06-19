@@ -29,7 +29,7 @@ DATABASE_URL = "postgresql://activia:activia@localhost:5432/activia_trace_test"
 
 # Semillas esperadas
 EXPECTED_PERMISO_COUNT = 22
-EXPECTED_MATRIX_ROWS = 50
+EXPECTED_MATRIX_ROWS = 55
 
 
 def _alembic(*args: str) -> str:
@@ -120,7 +120,7 @@ class TestMigration003Upgrade:
 
         conn = await asyncpg.connect(DATABASE_URL)
         try:
-            # Insertar un tenant de prueba
+            await conn.execute("DELETE FROM tenant WHERE id = '11111111-1111-1111-1111-111111111111'")
             await conn.execute("""
                 INSERT INTO tenant (id, slug, nombre, activo, created_at, updated_at)
                 VALUES ('11111111-1111-1111-1111-111111111111', 'test', 'Test Tenant', TRUE, NOW(), NOW())
@@ -148,6 +148,7 @@ class TestMigration003Upgrade:
 
         conn = await asyncpg.connect(DATABASE_URL)
         try:
+            await conn.execute("DELETE FROM tenant WHERE id = '22222222-2222-2222-2222-222222222222'")
             await conn.execute("""
                 INSERT INTO tenant (id, slug, nombre, activo, created_at, updated_at)
                 VALUES ('22222222-2222-2222-2222-222222222222', 'idempotent', 'Idempotent', TRUE, NOW(), NOW())
@@ -205,7 +206,7 @@ class TestMigration003Upgrade:
                         (SELECT tenant_id FROM role LIMIT 1),
                         (SELECT id FROM role LIMIT 1),
                         (SELECT id FROM permiso LIMIT 1),
-                        'invalid_scope',
+                        'invalid',
                         NOW()
                     )
                 """)
