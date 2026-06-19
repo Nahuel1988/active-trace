@@ -18,6 +18,7 @@ from app.api.v1.programas import router as programas_router
 from app.api.v1.fechas_academicas import router as fechas_academicas_router
 from app.api.v1.routers.admin_usuarios import router as admin_usuarios_router
 from app.api.v1.routers.asignaciones import router as asignaciones_router
+from app.api.v1.routers.equipos import router as equipos_router
 from app.api.v1.routers.tareas import router as tareas_router
 from app.api.v1.routers.avisos import router as avisos_router
 from app.api.v1.routers.perfil import router as perfil_router
@@ -58,6 +59,7 @@ def create_app() -> FastAPI:
     app.include_router(fechas_academicas_router)
     app.include_router(admin_usuarios_router)
     app.include_router(asignaciones_router)
+    app.include_router(equipos_router)
     app.include_router(tareas_router)
     app.include_router(avisos_router)
     app.include_router(perfil_router)

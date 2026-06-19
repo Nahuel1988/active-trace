@@ -196,3 +196,219 @@ class AsignacionRepository(BaseRepository[Asignacion]):
         )
         result = await session.execute(stmt)
         return list(result.scalars().all())
+
+    async def list_by_equipo(
+        self,
+        *,
+        tenant_id: UUID,
+        materia_id: Optional[UUID] = None,
+        carrera_id: Optional[UUID] = None,
+        cohorte_id: Optional[UUID] = None,
+        session: AsyncSession,
+        solo_vigentes: bool = True,
+    ) -> List[Asignacion]:
+        """Retorna asignaciones de un equipo (tupla materia, carrera, cohorte).
+
+        Args:
+            tenant_id: UUID del tenant.
+            materia_id: UUID de materia (None incluye materias sin contexto).
+            carrera_id: UUID de carrera (None incluye carreras sin contexto).
+            cohorte_id: UUID de cohorte (None incluye cohortes sin contexto).
+            session: Sesión async.
+            solo_vigentes: True = solo vigentes, False = todas no soft-deleted.
+
+        Returns:
+            Lista de Asignacion del equipo.
+        """
+        now = datetime.now(timezone.utc)
+
+        conditions = [
+            Asignacion.tenant_id == tenant_id,
+            Asignacion.deleted_at.is_(None),
+        ]
+
+        if materia_id is not None:
+            conditions.append(Asignacion.materia_id == materia_id)
+        else:
+            conditions.append(Asignacion.materia_id.is_(None))
+
+        if carrera_id is not None:
+            conditions.append(Asignacion.carrera_id == carrera_id)
+        else:
+            conditions.append(Asignacion.carrera_id.is_(None))
+
+        if cohorte_id is not None:
+            conditions.append(Asignacion.cohorte_id == cohorte_id)
+        else:
+            conditions.append(Asignacion.cohorte_id.is_(None))
+
+        if solo_vigentes:
+            conditions.extend([
+                Asignacion.desde <= now,
+                or_(Asignacion.hasta.is_(None), Asignacion.hasta >= now),
+            ])
+
+        stmt = select(Asignacion).where(*conditions)
+        result = await session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def exists_vigente(
+        self,
+        *,
+        tenant_id: UUID,
+        usuario_id: UUID,
+        role_id: UUID,
+        materia_id: Optional[UUID] = None,
+        carrera_id: Optional[UUID] = None,
+        cohorte_id: Optional[UUID] = None,
+        session: AsyncSession,
+    ) -> bool:
+        """Verifica si existe una asignación vigente para la combinación exacta.
+
+        Usado para idempotencia en asignación masiva y clonado.
+
+        Returns:
+            True si ya existe una asignación vigente (no soft-deleted).
+        """
+        now = datetime.now(timezone.utc)
+
+        conditions = [
+            Asignacion.tenant_id == tenant_id,
+            Asignacion.usuario_id == usuario_id,
+            Asignacion.role_id == role_id,
+            Asignacion.deleted_at.is_(None),
+            Asignacion.desde <= now,
+            or_(Asignacion.hasta.is_(None), Asignacion.hasta >= now),
+        ]
+
+        if materia_id is not None:
+            conditions.append(Asignacion.materia_id == materia_id)
+        else:
+            conditions.append(Asignacion.materia_id.is_(None))
+
+        if carrera_id is not None:
+            conditions.append(Asignacion.carrera_id == carrera_id)
+        else:
+            conditions.append(Asignacion.carrera_id.is_(None))
+
+        if cohorte_id is not None:
+            conditions.append(Asignacion.cohorte_id == cohorte_id)
+        else:
+            conditions.append(Asignacion.cohorte_id.is_(None))
+
+        stmt = select(Asignacion.id).where(*conditions).limit(1)
+        result = await session.execute(stmt)
+        return result.scalar_one_or_none() is not None
+
+    async def list_distinct_equipos(
+        self,
+        *,
+        tenant_id: UUID,
+        session: AsyncSession,
+        materia_id: Optional[UUID] = None,
+        carrera_id: Optional[UUID] = None,
+        cohorte_id: Optional[UUID] = None,
+    ) -> List[dict]:
+        """Retorna tuplas (materia_id, carrera_id, cohorte_id) distintas con conteo.
+
+        Solo considera asignaciones vigentes y no soft-deleted.
+        Filtros opcionales para reducir resultados.
+
+        Returns:
+            Lista de dicts con materia_id, carrera_id, cohorte_id, conteo.
+        """
+        now = datetime.now(timezone.utc)
+
+        conditions = [
+            Asignacion.tenant_id == tenant_id,
+            Asignacion.deleted_at.is_(None),
+            Asignacion.desde <= now,
+            or_(Asignacion.hasta.is_(None), Asignacion.hasta >= now),
+        ]
+
+        if materia_id is not None:
+            conditions.append(Asignacion.materia_id == materia_id)
+        if carrera_id is not None:
+            conditions.append(Asignacion.carrera_id == carrera_id)
+        if cohorte_id is not None:
+            conditions.append(Asignacion.cohorte_id == cohorte_id)
+
+        stmt = (
+            select(
+                Asignacion.materia_id,
+                Asignacion.carrera_id,
+                Asignacion.cohorte_id,
+                func.count(Asignacion.id).label("conteo"),
+            )
+            .where(*conditions)
+            .group_by(
+                Asignacion.materia_id,
+                Asignacion.carrera_id,
+                Asignacion.cohorte_id,
+            )
+        )
+        result = await session.execute(stmt)
+        rows = []
+        for row in result.all():
+            rows.append({
+                "materia_id": str(row.materia_id) if row.materia_id else None,
+                "carrera_id": str(row.carrera_id) if row.carrera_id else None,
+                "cohorte_id": str(row.cohorte_id) if row.cohorte_id else None,
+                "conteo": row.conteo,
+            })
+        return rows
+
+    async def bulk_update_vigencia(
+        self,
+        *,
+        tenant_id: UUID,
+        materia_id: Optional[UUID] = None,
+        carrera_id: Optional[UUID] = None,
+        cohorte_id: Optional[UUID] = None,
+        desde: datetime,
+        hasta: Optional[datetime] = None,
+        session: AsyncSession,
+    ) -> int:
+        """Actualiza vigencia de todas las asignaciones del equipo en el tenant.
+
+        Args:
+            tenant_id: UUID del tenant.
+            materia_id: UUID de materia (None = las que no tienen materia).
+            carrera_id: UUID de carrera (None = las que no tienen carrera).
+            cohorte_id: UUID de cohorte (None = las que no tienen cohorte).
+            desde: Nuevo inicio de vigencia.
+            hasta: Nuevo fin de vigencia (None = indefinido).
+            session: Sesión async.
+
+        Returns:
+            Número de filas afectadas.
+        """
+        conditions = [
+            Asignacion.tenant_id == tenant_id,
+            Asignacion.deleted_at.is_(None),
+        ]
+
+        if materia_id is not None:
+            conditions.append(Asignacion.materia_id == materia_id)
+        else:
+            conditions.append(Asignacion.materia_id.is_(None))
+
+        if carrera_id is not None:
+            conditions.append(Asignacion.carrera_id == carrera_id)
+        else:
+            conditions.append(Asignacion.carrera_id.is_(None))
+
+        if cohorte_id is not None:
+            conditions.append(Asignacion.cohorte_id == cohorte_id)
+        else:
+            conditions.append(Asignacion.cohorte_id.is_(None))
+
+        stmt = (
+            update(Asignacion)
+            .where(*conditions)
+            .values(desde=desde, hasta=hasta)
+            .returning(Asignacion.id)
+        )
+        result = await session.execute(stmt)
+        await session.flush()
+        return len(result.all())
