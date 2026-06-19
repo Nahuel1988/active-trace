@@ -12,6 +12,7 @@ from app.models.cohorte import Cohorte
 from app.models.materia import Materia, EstadoMateria
 from app.models.programa_materia import ProgramaMateria
 from app.models.fecha_academica import FechaAcademica, TipoFechaAcademica
+from app.models.asignacion import Asignacion, ROLES_EN_ASIGNACION, ESTADO_VIGENTE, ESTADO_VENCIDA
 
 __all__ = [
     "Tenant",
@@ -33,4 +34,8 @@ __all__ = [
     "ProgramaMateria",
     "FechaAcademica",
     "TipoFechaAcademica",
+    "Asignacion",
+    "ROLES_EN_ASIGNACION",
+    "ESTADO_VIGENTE",
+    "ESTADO_VENCIDA",
 ]
