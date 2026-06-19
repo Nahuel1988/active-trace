@@ -24,6 +24,11 @@ from app.models import (  # noqa: F401 — register models in Base.metadata
     TotpSecret,
     User,
     UserRole,
+    Carrera,
+    Cohorte,
+    Materia,
+    ProgramaMateria,
+    FechaAcademica,
 )
 
 config = context.config

@@ -115,10 +115,16 @@ PERMISOS: list[tuple[str, str, str, str]] = [
     ),
     # Estructura académica
     (
+        "estructura:ver",
+        "estructura",
+        "ver",
+        "Ver estructura académica (carreras, cohortes, materias, programas, fechas)",
+    ),
+    (
         "estructura:gestionar",
         "estructura",
         "gestionar",
-        "Gestionar estructura académica (carreras, cohortes, materias)",
+        "Gestionar estructura académica (carreras, cohortes, materias, programas, fechas)",
     ),
     # Usuarios
     (
@@ -231,6 +237,7 @@ MATRIZ_BASE: list[tuple[str, str, str]] = [
     (ROLE_COORDINADOR, "tareas:gestionar", "global"),
     (ROLE_COORDINADOR, "avisos:publicar", "global"),
     (ROLE_COORDINADOR, "equipos:asignar", "global"),
+    (ROLE_COORDINADOR, "estructura:ver", "global"),
     (ROLE_COORDINADOR, "auditoria:ver", "propio"),
     # -- NEXO (enlace transversal institución ↔ docentes/alumnos) --
     (ROLE_NEXO, "avisos:confirmar", "global"),
@@ -251,6 +258,7 @@ MATRIZ_BASE: list[tuple[str, str, str]] = [
     (ROLE_ADMIN, "tareas:gestionar", "global"),
     (ROLE_ADMIN, "avisos:publicar", "global"),
     (ROLE_ADMIN, "equipos:asignar", "global"),
+    (ROLE_ADMIN, "estructura:ver", "global"),
     (ROLE_ADMIN, "estructura:gestionar", "global"),
     (ROLE_ADMIN, "usuarios:gestionar", "global"),
     (ROLE_ADMIN, "auditoria:ver", "global"),
