@@ -20,6 +20,9 @@ from app.models.acknowledgment import AcknowledgmentAviso
 from app.models.hilo_mensaje import HiloMensaje
 from app.models.mensaje_interno import MensajeInterno
 from app.models.evaluacion import Evaluacion, ReservaEvaluacion, ResultadoEvaluacion, TipoEvaluacion, EstadoReserva
+from app.models.slot_encuentro import SlotEncuentro, DiaSemana
+from app.models.instancia_encuentro import InstanciaEncuentro, EstadoInstancia
+from app.models.guardia import Guardia, EstadoGuardia
 
 __all__ = [
     "Tenant",
@@ -59,4 +62,10 @@ __all__ = [
     "ResultadoEvaluacion",
     "TipoEvaluacion",
     "EstadoReserva",
+    "SlotEncuentro",
+    "DiaSemana",
+    "InstanciaEncuentro",
+    "EstadoInstancia",
+    "Guardia",
+    "EstadoGuardia",
 ]
