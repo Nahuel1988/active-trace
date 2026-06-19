@@ -29,6 +29,9 @@ from app.models import (  # noqa: F401 — register models in Base.metadata
     Materia,
     ProgramaMateria,
     FechaAcademica,
+    Tarea,
+    EstadoTarea,
+    ComentarioTarea,
 )
 
 config = context.config

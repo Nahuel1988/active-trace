@@ -38,6 +38,11 @@ class _AuditCodes:
     # ── Liquidaciones ─────────────────────────────────────────────────────
     LIQUIDACION_CERRAR: str = "LIQUIDACION_CERRAR"
 
+    # ── Tareas internas (C-16) ────────────────────────────────────────────
+    TAREA_CREAR: str = "TAREA_CREAR"
+    TAREA_DELEGAR: str = "TAREA_DELEGAR"
+    TAREA_CAMBIAR_ESTADO: str = "TAREA_CAMBIAR_ESTADO"
+
     # ── Impersonación ─────────────────────────────────────────────────────
     IMPERSONACION_INICIAR: str = "IMPERSONACION_INICIAR"
     IMPERSONACION_FINALIZAR: str = "IMPERSONACION_FINALIZAR"
