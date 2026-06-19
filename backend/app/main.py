@@ -22,6 +22,7 @@ from app.api.v1.routers.tareas import router as tareas_router
 from app.api.v1.routers.avisos import router as avisos_router
 from app.api.v1.routers.perfil import router as perfil_router
 from app.api.v1.routers.inbox import router as inbox_router
+from app.api.v1.routers.auditoria import router as auditoria_router
 from app.core.dependencies import get_engine, get_settings
 from app.core.logging import setup_json_logging
 from app.core.observability import setup_observability
@@ -61,6 +62,7 @@ def create_app() -> FastAPI:
     app.include_router(avisos_router)
     app.include_router(perfil_router)
     app.include_router(inbox_router)
+    app.include_router(auditoria_router)
     return app
 
 

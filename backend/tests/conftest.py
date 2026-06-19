@@ -1,6 +1,14 @@
+import asyncio
 import os
+import sys
 import uuid
 from pathlib import Path
+
+# ── Windows + asyncpg fix ──────────────────────────────────────────────────
+# asyncpg requires SelectorEventLoop (no ProactorEventLoop) for socket
+# operations. Python 3.8+ defaults to ProactorEventLoop on Windows.
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
