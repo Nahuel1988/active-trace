@@ -65,21 +65,6 @@ Si un PROFESOR tiene tres comisiones de materias que caen bajo la clave `PROG`:
 
 ---
 
-### PA-25 — ¿Cuál es la semántica precisa del rol NEXO?
-
-El rol NEXO existe en el dominio, tiene tratamiento contable propio y aparece en el catálogo de roles, pero su función operativa no está completamente especificada.
-
-**Preguntas abiertas**:
-
-- ¿Un NEXO está asociado a una regional, a un programa, a un grupo de docentes, o a un grupo de alumnos?
-- ¿Tiene acceso a datos de alumnos? ¿A qué granularidad?
-- ¿Puede asignar o reasignar docentes a comisiones?
-- ¿Su función es principalmente de enlace administrativo o también pedagógico?
-- ¿Un usuario puede ser NEXO y COORDINADOR al mismo tiempo?
-
-**Impacto**: define qué permisos incluir en el rol NEXO dentro de la matriz de autorización ([03_actores_y_roles.md](03_actores_y_roles.md)).
-
----
 
 ## Prioridad MEDIA — refinamiento del modelo
 
@@ -243,6 +228,7 @@ Las siguientes preguntas que existían en versiones anteriores de este documento
 | PA-04 | Login por email + contraseña; 2FA opcional (TOTP); recuperación por token de un solo uso; alta solo administrativa en MVP | [07_flujos_principales.md](07_flujos_principales.md), [`docs/ARQUITECTURA.md` §5.1](../docs/ARQUITECTURA.md) |
 | PA-06 | Fórmula de liquidación: Base (por rol) + Plus (por clave × rol); ver RN-31 a RN-38 | [05_reglas_de_negocio.md](05_reglas_de_negocio.md) |
 | PA-21 | Impersonación via parámetro de petición: eliminada. La impersonación legítima requiere permiso explícito, sesión diferenciada y auditoría completa | [03_actores_y_roles.md §4](03_actores_y_roles.md), [`docs/ARQUITECTURA.md`](../docs/ARQUITECTURA.md) |
+| PA-25 | NEXO es puente institucional sin carga docente ni administrativa; 6 permisos de enlace transversal (lectura de equipos, alumnos y estructura). Implementado en `rbac_seed.py` y migración `003_rbac` (C-04) | [03_actores_y_roles.md](03_actores_y_roles.md) |
 
 ---
 
@@ -250,7 +236,7 @@ Las siguientes preguntas que existían en versiones anteriores de este documento
 
 Para resolver las preguntas pendientes se recomienda:
 
-1. **Una sesión de trabajo con el responsable de producto** — cubre las preguntas de dominio (PA-01, PA-22, PA-23, PA-25 son prioritarias).
+1. **Una sesión de trabajo con el responsable de producto** — cubre las preguntas de dominio (PA-01, PA-22, PA-23 son prioritarias).
 2. **Revisión del modelo de datos con el equipo técnico** — para validar las entidades y relaciones de [04_modelo_de_datos.md](04_modelo_de_datos.md).
 3. **Sesión de refinamiento con FINANZAS** — para cerrar PA-17, PA-18, PA-24 que afectan el módulo de liquidaciones.
 4. **Cuando se cierre una pregunta**: documentar la resolución en el archivo temático correspondiente y moverla a la tabla de "Decisiones ya cerradas" de este archivo.
