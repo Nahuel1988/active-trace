@@ -144,6 +144,14 @@
       "sessions": 0,
       "memories": 5,
       "prompts": 0
+    },
+    {
+      "id": "3438129c",
+      "created_by": "Usuario",
+      "created_at": "2026-06-19T22:54:32Z",
+      "sessions": 0,
+      "memories": 1,
+      "prompts": 0
     }
   ]
 }
