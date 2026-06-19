@@ -32,6 +32,9 @@ class TestAuditCodesValues:
     def test_impersonacion_finalizar_value(self) -> None:
         assert AuditCodes.IMPERSONACION_FINALIZAR == "IMPERSONACION_FINALIZAR"
 
+    def test_coloquio_modificar_resultado_value(self) -> None:
+        assert AuditCodes.COLOQUIO_MODIFICAR_RESULTADO == "COLOQUIO_MODIFICAR_RESULTADO"
+
 
 class TestAuditCodesType:
     """Scenario: AuditCodes expone cada código como atributo de clase (str)."""
@@ -45,6 +48,7 @@ class TestAuditCodesType:
             AuditCodes.LIQUIDACION_CERRAR,
             AuditCodes.IMPERSONACION_INICIAR,
             AuditCodes.IMPERSONACION_FINALIZAR,
+            AuditCodes.COLOQUIO_MODIFICAR_RESULTADO,
         ]
         for code in codes:
             assert isinstance(code, str), f"Expected str, got {type(code)}"

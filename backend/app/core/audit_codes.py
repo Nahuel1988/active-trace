@@ -43,6 +43,9 @@ class _AuditCodes:
     TAREA_DELEGAR: str = "TAREA_DELEGAR"
     TAREA_CAMBIAR_ESTADO: str = "TAREA_CAMBIAR_ESTADO"
 
+    # ── Coloquios / Evaluaciones ──────────────────────────────────────────
+    COLOQUIO_MODIFICAR_RESULTADO: str = "COLOQUIO_MODIFICAR_RESULTADO"
+
     # ── Impersonación ─────────────────────────────────────────────────────
     IMPERSONACION_INICIAR: str = "IMPERSONACION_INICIAR"
     IMPERSONACION_FINALIZAR: str = "IMPERSONACION_FINALIZAR"

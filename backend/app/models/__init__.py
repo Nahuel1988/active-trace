@@ -19,6 +19,7 @@ from app.models.aviso import Aviso, AlcanceAviso, SeveridadAviso
 from app.models.acknowledgment import AcknowledgmentAviso
 from app.models.hilo_mensaje import HiloMensaje
 from app.models.mensaje_interno import MensajeInterno
+from app.models.evaluacion import Evaluacion, ReservaEvaluacion, ResultadoEvaluacion, TipoEvaluacion, EstadoReserva
 
 __all__ = [
     "Tenant",
@@ -53,4 +54,9 @@ __all__ = [
     "AcknowledgmentAviso",
     "HiloMensaje",
     "MensajeInterno",
+    "Evaluacion",
+    "ReservaEvaluacion",
+    "ResultadoEvaluacion",
+    "TipoEvaluacion",
+    "EstadoReserva",
 ]

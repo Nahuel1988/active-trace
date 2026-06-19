@@ -167,6 +167,19 @@ PERMISOS: list[tuple[str, str, str, str]] = [
         "gestionar",
         "Gestionar facturas",
     ),
+    # Coloquios
+    (
+        "coloquios:gestionar",
+        "coloquios",
+        "gestionar",
+        "Gestionar coloquios (convocatorias, resultados)",
+    ),
+    (
+        "coloquios:reservar",
+        "coloquios",
+        "reservar",
+        "Reservar turno de coloquio",
+    ),
     # Configuración del tenant
     (
         "configuracion:gestionar",
@@ -246,6 +259,9 @@ MATRIZ_BASE: list[tuple[str, str, str]] = [
     (ROLE_NEXO, "atrasados:ver", "global"),
     (ROLE_NEXO, "tareas:gestionar", "global"),
     (ROLE_NEXO, "equipos:asignar", "global"),
+    (ROLE_COORDINADOR, "coloquios:gestionar", "global"),
+    # -- ALUMNO --
+    (ROLE_ALUMNO, "coloquios:reservar", "propio"),
     # -- ADMIN --
     (ROLE_ADMIN, "avisos:confirmar", "global"),
     (ROLE_ADMIN, "calificaciones:importar", "global"),
@@ -261,6 +277,7 @@ MATRIZ_BASE: list[tuple[str, str, str]] = [
     (ROLE_ADMIN, "estructura:ver", "global"),
     (ROLE_ADMIN, "estructura:gestionar", "global"),
     (ROLE_ADMIN, "usuarios:gestionar", "global"),
+    (ROLE_ADMIN, "coloquios:gestionar", "global"),
     (ROLE_ADMIN, "auditoria:ver", "global"),
     (ROLE_ADMIN, "configuracion:gestionar", "global"),
     # -- FINANZAS --
