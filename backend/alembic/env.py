@@ -32,6 +32,8 @@ from app.models import (  # noqa: F401 — register models in Base.metadata
     Tarea,
     EstadoTarea,
     ComentarioTarea,
+    Aviso,
+    AcknowledgmentAviso,
 )
 
 config = context.config

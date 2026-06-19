@@ -19,6 +19,7 @@ from app.api.v1.fechas_academicas import router as fechas_academicas_router
 from app.api.v1.routers.admin_usuarios import router as admin_usuarios_router
 from app.api.v1.routers.asignaciones import router as asignaciones_router
 from app.api.v1.routers.tareas import router as tareas_router
+from app.api.v1.routers.avisos import router as avisos_router
 from app.core.dependencies import get_engine, get_settings
 from app.core.logging import setup_json_logging
 from app.core.observability import setup_observability
@@ -55,6 +56,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_usuarios_router)
     app.include_router(asignaciones_router)
     app.include_router(tareas_router)
+    app.include_router(avisos_router)
     return app
 
 
