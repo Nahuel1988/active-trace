@@ -1,8 +1,16 @@
 """Modelo User — identidad de usuario multi-tenant.
 
-PII sensible (email) se almacena cifrado AES-256 en `email_encrypted`.
-La columna `email_lookup` contiene un HMAC determinístico para búsqueda
-por email sin descifrar.
+PII sensible (email, dni, cuil, cbu, alias_cbu) se almacena cifrado AES-256-GCM
+en columnas `*_encrypted`. La columna `email_lookup` contiene un HMAC
+determinístico para búsqueda por email sin descifrar.
+
+C-07 extiende el modelo con atributos institucionales:
+    nombre, apellidos, banco, regional, legajo_profesional, facturador
+y columnas PII cifradas:
+    dni_encrypted, cuil_encrypted, cbu_encrypted, alias_cbu_encrypted
+
+Todas las nuevas columnas son NULLABLE para convivir con usuarios pre-existentes
+creados en C-02.
 """
 
 import uuid
@@ -18,6 +26,9 @@ from app.models.base import TenantScopedMixin
 class User(TenantScopedMixin, Base):
     __tablename__ = "user"
 
+    # -----------------------------------------------------------------------
+    # Credenciales y email (C-02)
+    # -----------------------------------------------------------------------
     email_encrypted: Mapped[str] = mapped_column(
         Text,
         nullable=False,
@@ -48,6 +59,66 @@ class User(TenantScopedMixin, Base):
         Boolean,
         default=False,
         nullable=False,
+    )
+
+    # -----------------------------------------------------------------------
+    # Atributos institucionales (C-07) — NULLABLE para convivencia con C-02
+    # -----------------------------------------------------------------------
+    nombre: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+        comment="Nombre/s del usuario",
+    )
+    apellidos: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+        comment="Apellido/s del usuario",
+    )
+    banco: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+        comment="Banco del usuario (texto plano, no es PII regulada)",
+    )
+    regional: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+        comment="Regional / sede del usuario",
+    )
+    legajo_profesional: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+        comment="Legajo profesional (atributo de negocio, NO credencial)",
+    )
+    facturador: Mapped[bool | None] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=False,
+        server_default="false",
+        comment="True si el usuario emite facturas",
+    )
+
+    # -----------------------------------------------------------------------
+    # PII cifrada (C-07) — AES-256-GCM vía encryption_service
+    # -----------------------------------------------------------------------
+    dni_encrypted: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+        comment="DNI cifrado AES-256-GCM (ciphertext en base64)",
+    )
+    cuil_encrypted: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+        comment="CUIL cifrado AES-256-GCM (ciphertext en base64)",
+    )
+    cbu_encrypted: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+        comment="CBU cifrado AES-256-GCM (ciphertext en base64)",
+    )
+    alias_cbu_encrypted: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+        comment="Alias CBU cifrado AES-256-GCM (ciphertext en base64)",
     )
 
     @declared_attr

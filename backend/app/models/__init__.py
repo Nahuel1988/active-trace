@@ -10,6 +10,7 @@ from app.models.audit_log import AuditLog
 from app.models.carrera import Carrera, EstadoCarrera
 from app.models.cohorte import Cohorte
 from app.models.materia import Materia, EstadoMateria
+from app.models.asignacion import Asignacion, ROLES_EN_ASIGNACION, ESTADO_VIGENTE, ESTADO_VENCIDA
 
 __all__ = [
     "Tenant",
@@ -28,4 +29,8 @@ __all__ = [
     "Cohorte",
     "Materia",
     "EstadoMateria",
+    "Asignacion",
+    "ROLES_EN_ASIGNACION",
+    "ESTADO_VIGENTE",
+    "ESTADO_VENCIDA",
 ]

@@ -176,6 +176,46 @@ frontend/src/
 - **Permisos finos por feature**, no por rol monolítico. Matriz rol × permiso en `core/permissions.py`.
 - Cada endpoint declara el permiso requerido vía dependency (`require_permission("entregas:write")`). Sin él → `403`.
 
+#### Dos fuentes de roles (C-07)
+
+Los permisos efectivos de un usuario se resuelven como **UNION** de dos fuentes:
+
+| Fuente | Modelo | Roles que contiene | Vigencia |
+|--------|--------|--------------------|---------|
+| `user_role` | `UserRole` | **ADMIN**, **FINANZAS** (roles globales del tenant) | `desde ≤ now AND (hasta IS NULL OR hasta > now)` |
+| `asignacion` | `Asignacion` | **PROFESOR**, **TUTOR**, **COORDINADOR**, **NEXO** (roles con contexto académico) | `desde ≤ now AND (hasta IS NULL OR hasta ≥ now) AND deleted_at IS NULL` |
+
+La resolución aplica `min(scope)` por `code` en el UNION — `'global' < 'propio'` en ASCII, por lo que scope global siempre gana sobre propio.
+
+El modelo `Asignacion` añade contexto académico a los roles operativos:
+
+```
+Asignacion
+  tenant_id  (FK tenant — obligatorio)
+  usuario_id (FK user — NOT NULL)
+  role_id    (FK role — NOT NULL)
+  desde      (DateTime — NOT NULL)
+  hasta      (DateTime — NULL = indefinida)
+  materia_id (FK materia — nullable)
+  carrera_id (FK carrera — nullable)
+  cohorte_id (FK cohorte — nullable)
+  responsable_id (FK user — nullable, self-ref para cadena jerárquica)
+  comisiones (ARRAY(String) — lista de comisiones)
+  deleted_at (soft delete)
+```
+
+Reglas de combinación rol × contexto académico (tabla D3):
+
+| Rol | materia_id | carrera_id | cohorte_id |
+|-----|-----------|-----------|-----------|
+| PROFESOR | requerido | requerido | requerido |
+| TUTOR | requerido | requerido | requerido |
+| COORDINADOR | opcional | **requerido** | opcional |
+| NEXO | opcional | opcional | opcional |
+| ADMIN / FINANZAS | ❌ van en `user_role`, NO en `asignacion` |
+
+`require_permission()` NO infiere scoping académico — resuelve si el usuario tiene el permiso en cualquier contexto.
+
 ### 5.3 Principios de control de acceso
 
 El control de acceso de activia-trace se rige por los siguientes principios, que son invariantes del sistema:
@@ -191,7 +231,7 @@ El control de acceso de activia-trace se rige por los siguientes principios, que
 ### 5.4 Otras defensas transversales
 
 - **HTTPS/TLS 1.3** en todo el tráfico ([RNF-07](./PRD.md#seguridad)).
-- **PII cifrada en reposo** (CBU, DNI) con AES-256 ([RNF-08](./PRD.md#seguridad)).
+- **PII cifrada en reposo** — columnas `_encrypted` en `User` (email, dni, cuil, cbu, alias_cbu) con AES-256-GCM; búsqueda por email usa HMAC-SHA256 (`email_lookup`) ([RNF-08](./PRD.md#seguridad)).
 - **CSRF protection** en endpoints state-changing ([RNF-10](./PRD.md#seguridad)).
 - **Rate limiting** por IP y por usuario ([RNF-11](./PRD.md#seguridad)).
 - **Audit log append-only** (idealmente write-once), sin límite de retención ([RNF-12](./PRD.md#seguridad), [RF-38](./PRD.md#auditoría)).
@@ -247,6 +287,7 @@ activia-trace se integra con **Moodle** (el LMS) a través de su API de Web Serv
   - **Padrón con historial** (versionado, no upsert destructivo — [RF-08](./PRD.md#ingesta-y-datos)).
   - **Catálogo único de materias** por tenant ([RF-09](./PRD.md#ingesta-y-datos)).
   - Audit log append-only sin límite de registros.
+  - **Asignacion** (C-07): coexiste con `UserRole` para roles con contexto académico. Ver §5.2.
 - **Identidad de usuario**: la identificación interna es un **UUID**, que es el único selector válido para autenticación y autorización. El número de legajo, cuando existe, es un **atributo de negocio** (visible en pantallas, buscable) pero nunca actúa como credencial, como PK de identidad ni como parámetro de sesión.
 
 ---
