@@ -70,10 +70,11 @@ def upgrade() -> None:
     op.create_index("ix_reserva_evaluacion_evaluacion_id", "reserva_evaluacion", ["evaluacion_id"], unique=False)
     op.create_index("ix_reserva_evaluacion_alumno_id", "reserva_evaluacion", ["alumno_id"], unique=False)
     op.create_index("ix_reserva_evaluacion_estado", "reserva_evaluacion", ["estado"], unique=False)
-    op.create_unique_constraint(
+    op.create_index(
         "uq_reserva_evaluacion_tenant_evaluacion_alumno_activa",
         "reserva_evaluacion",
         ["tenant_id", "evaluacion_id", "alumno_id"],
+        unique=True,
         postgresql_where=sa.text("estado = 'Activa'"),
     )
 

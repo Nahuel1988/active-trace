@@ -5,11 +5,11 @@ a ``entrada_padron``, ``materia``, ``user``, ``asignacion``. Incluye
 índices compuestos y UniqueConstraint scoped al tenant.
 
 Merge migration: depende de los tres heads 008_encuentros_y_guardias,
-008_evaluaciones y 008_version_padron_entrada_padron, que son hermanos
+008_evaluaciones y 008_padron_version, que son hermanos
 con padre común 007_tareas_internas.
 
 Revision ID: 009_calificacion_umbral_materia
-Revises: 008_encuentros_y_guardias, 008_evaluaciones, 008_version_padron_entrada_padron
+Revises: 008_encuentros_y_guardias, 008_evaluaciones, 008_padron_version
 Create Date: 2026-06-19 20:30:00.000000
 """
 from alembic import op
@@ -20,7 +20,7 @@ revision = "009_calificacion_umbral_materia"
 down_revision = (
     "008_encuentros_y_guardias",
     "008_evaluaciones",
-    "008_version_padron_entrada_padron",
+    "008_padron_version",
 )
 branch_labels = None
 depends_on = None

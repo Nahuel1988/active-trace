@@ -32,6 +32,9 @@ from app.api.v1.routers.padron import router as padron_router
 from app.api.v1.routers.encuentros import router as encuentros_router
 from app.api.v1.routers.comunicaciones import router as comunicaciones_router
 from app.api.v1.routers.guardias import router as guardias_router
+from app.api.v1.routers.grilla import router as grilla_router
+from app.api.v1.routers.liquidaciones import router as liquidaciones_router
+from app.api.v1.routers.facturas import router as facturas_router
 from app.core.dependencies import get_engine, get_settings
 from app.core.logging import setup_json_logging
 from app.core.observability import setup_observability
@@ -81,6 +84,9 @@ def create_app() -> FastAPI:
     app.include_router(encuentros_router)
     app.include_router(comunicaciones_router)
     app.include_router(guardias_router)
+    app.include_router(grilla_router)
+    app.include_router(liquidaciones_router)
+    app.include_router(facturas_router)
     return app
 
 

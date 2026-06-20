@@ -167,10 +167,22 @@ PERMISOS: list[tuple[str, str, str, str]] = [
         "Calcular liquidaciones",
     ),
     (
+        "liquidaciones:ver",
+        "liquidaciones",
+        "ver",
+        "Ver liquidaciones y honorarios",
+    ),
+    (
         "liquidaciones:cerrar",
         "liquidaciones",
         "cerrar",
         "Cerrar liquidaciones",
+    ),
+    (
+        "liquidaciones:exportar",
+        "liquidaciones",
+        "exportar",
+        "Exportar liquidaciones (planilla de honorarios)",
     ),
     # Facturas
     (
@@ -318,8 +330,12 @@ MATRIZ_BASE: list[tuple[str, str, str]] = [
     (ROLE_FINANZAS, "auditoria:ver", "global"),
     (ROLE_FINANZAS, "grilla:operar", "global"),
     (ROLE_FINANZAS, "liquidaciones:calcular", "global"),
+    (ROLE_FINANZAS, "liquidaciones:ver", "global"),
     (ROLE_FINANZAS, "liquidaciones:cerrar", "global"),
+    (ROLE_FINANZAS, "liquidaciones:exportar", "global"),
     (ROLE_FINANZAS, "facturas:gestionar", "global"),
+    # -- ADMIN — solo puede ver liquidaciones (no operar) --
+    (ROLE_ADMIN, "liquidaciones:ver", "global"),
 ]
 
 # ---------------------------------------------------------------------------

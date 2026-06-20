@@ -1,11 +1,11 @@
-"""008_version_padron_entrada_padron
+"""008_padron_version
 
 C-09: Crea las tablas ``version_padron`` y ``entrada_padron`` con FKs
 a ``materia``, ``cohorte`` y ``user``. Incluye el índice parcial
 UNIQUE para la invariante de una sola versión activa por tupla
 (tenant, materia, cohorte).
 
-Revision ID: 008_version_padron_entrada_padron
+Revision ID: 008_padron_version
 Revises: 007_tareas_internas
 Create Date: 2026-06-19 20:00:00.000000
 """
@@ -13,7 +13,7 @@ from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
-revision = "008_version_padron_entrada_padron"
+revision = "008_padron_version"
 down_revision = "007_tareas_internas"
 branch_labels = None
 depends_on = None

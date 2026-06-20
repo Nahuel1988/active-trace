@@ -23,13 +23,6 @@ depends_on = None
 
 def upgrade() -> None:
     # -----------------------------------------------------------------------
-    # 1. Enums
-    # -----------------------------------------------------------------------
-    op.execute("CREATE TYPE diasemana AS ENUM ('lunes','martes','miercoles','jueves','viernes','sabado','domingo')")
-    op.execute("CREATE TYPE estadoinstancia AS ENUM ('programado','realizado','cancelado')")
-    op.execute("CREATE TYPE estadoguardia AS ENUM ('pendiente','realizada','cancelada')")
-
-    # -----------------------------------------------------------------------
     # 2. Tabla slot_encuentro
     # -----------------------------------------------------------------------
     op.create_table(
@@ -48,8 +41,7 @@ def upgrade() -> None:
                   sa.ForeignKey("materia.id", ondelete="CASCADE"), nullable=False),
         sa.Column("titulo", sa.Text, nullable=False),
         sa.Column("hora", sa.Time, nullable=False),
-        sa.Column("dia_semana", sa.Enum("lunes", "martes", "miercoles", "jueves",
-                  "viernes", "sabado", "domingo", name="diasemana"), nullable=False),
+        sa.Column("dia_semana", sa.String(32), nullable=False),
         sa.Column("fecha_inicio", sa.Date, nullable=False),
         sa.Column("cant_semanas", sa.Integer, nullable=False, server_default="0"),
         sa.Column("fecha_unica", sa.Date, nullable=True, default=None),
@@ -91,8 +83,7 @@ def upgrade() -> None:
         sa.Column("fecha", sa.Date, nullable=False),
         sa.Column("hora", sa.Time, nullable=False),
         sa.Column("titulo", sa.Text, nullable=False),
-        sa.Column("estado", sa.Enum("programado", "realizado", "cancelado",
-                  name="estadoinstancia"), nullable=False, server_default="programado"),
+        sa.Column("estado", sa.String(32), nullable=False, server_default="programado"),
         sa.Column("meet_url", sa.Text, nullable=True, default=None),
         sa.Column("video_url", sa.Text, nullable=True, default=None),
         sa.Column("comentario", sa.Text, nullable=True, default=None),
@@ -139,11 +130,9 @@ def upgrade() -> None:
                   sa.ForeignKey("carrera.id", ondelete="CASCADE"), nullable=False),
         sa.Column("cohorte_id", postgresql.UUID(as_uuid=True),
                   sa.ForeignKey("cohorte.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("dia", sa.Enum("lunes", "martes", "miercoles", "jueves",
-                  "viernes", "sabado", "domingo", name="diasemana"), nullable=False),
+        sa.Column("dia", sa.String(32), nullable=False),
         sa.Column("horario", sa.Text, nullable=False),
-        sa.Column("estado", sa.Enum("pendiente", "realizada", "cancelada",
-                  name="estadoguardia"), nullable=False, server_default="pendiente"),
+        sa.Column("estado", sa.String(32), nullable=False, server_default="pendiente"),
         sa.Column("comentarios", sa.Text, nullable=True, default=None),
         sa.Column("creada_at", sa.DateTime(timezone=True),
                   server_default=sa.func.now(), nullable=False),
@@ -167,10 +156,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    # Orden inverso de FK
     op.drop_table("guardia")
     op.drop_table("instancia_encuentro")
     op.drop_table("slot_encuentro")
-    op.execute("DROP TYPE IF EXISTS estadoguardia")
-    op.execute("DROP TYPE IF EXISTS estadoinstancia")
-    op.execute("DROP TYPE IF EXISTS diasemana")

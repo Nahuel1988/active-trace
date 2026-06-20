@@ -26,6 +26,10 @@ from app.models.instancia_encuentro import InstanciaEncuentro, EstadoInstancia
 from app.models.calificacion import Calificacion, OrigenCalificacionDB, UmbralMateria
 from app.models.guardia import Guardia, EstadoGuardia
 from app.models.comunicacion import Comunicacion, EstadoComunicacion
+from app.models.salario_base import SalarioBase, RolLiquidacion
+from app.models.salario_plus import SalarioPlus
+from app.models.liquidacion import Liquidacion, EstadoLiquidacion
+from app.models.factura import Factura, EstadoFactura
 
 __all__ = [
     "Tenant",
@@ -75,4 +79,11 @@ __all__ = [
     "EstadoGuardia",
     "Comunicacion",
     "EstadoComunicacion",
+    "SalarioBase",
+    "RolLiquidacion",
+    "SalarioPlus",
+    "Liquidacion",
+    "EstadoLiquidacion",
+    "Factura",
+    "EstadoFactura",
 ]
