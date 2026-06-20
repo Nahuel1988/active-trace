@@ -44,6 +44,17 @@ class _AuditCodes:
     TAREA_DELEGAR: str = "TAREA_DELEGAR"
     TAREA_CAMBIAR_ESTADO: str = "TAREA_CAMBIAR_ESTADO"
 
+    # ── Coloquios / Evaluaciones ──────────────────────────────────────────
+    COLOQUIO_MODIFICAR_RESULTADO: str = "COLOQUIO_MODIFICAR_RESULTADO"
+
+    # ── Encuentros (C-13) ──────────────────────────────────────────────────
+    ENCUENTRO_SLOT_CREAR: str = "ENCUENTRO_SLOT_CREAR"
+    ENCUENTRO_INSTANCIA_EDITAR: str = "ENCUENTRO_INSTANCIA_EDITAR"
+
+    # ── Guardias (C-13) ───────────────────────────────────────────────────
+    GUARDIA_REGISTRAR: str = "GUARDIA_REGISTRAR"
+    GUARDIA_CAMBIAR_ESTADO: str = "GUARDIA_CAMBIAR_ESTADO"
+
     # ── Impersonación ─────────────────────────────────────────────────────
     IMPERSONACION_INICIAR: str = "IMPERSONACION_INICIAR"
     IMPERSONACION_FINALIZAR: str = "IMPERSONACION_FINALIZAR"

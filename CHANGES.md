@@ -60,25 +60,25 @@ GATE 2: C-02 ✓
 GATE 3: C-03 ✓
   → C-04 rbac-permisos-finos                       [Agente A]
 
-GATE 4: C-04 ✓                                     ← PRIMER FORK (seguridad lista)
-  → C-05 audit-log                                 [Agente B]
-  → C-06 estructura-academica                      [Agente A]
-  → C-21 frontend-shell-y-auth                     [Agente C]
+GATE 4: C-04 ✓ ✅                                   ← PRIMER FORK — COMPLETADO
+  → C-05 audit-log                                 [Agente B] ✅
+  → C-06 estructura-academica                      [Agente A] ✅
+  → C-21 frontend-shell-y-auth                     [Agente C] ✅
 
-GATE 5: C-06 ✓                                     ← FORK ANCHO (entidades raíz listas)
-  → C-07 usuarios-y-asignaciones                   [Agente A]
-  → C-15 avisos-y-acknowledgment                   [Agente B — si C-05 ✓]
-  → C-17 programas-y-fechas-academicas             [Agente B]
+GATE 5: C-06 ✓ ✅                                   ← FORK ANCHO — COMPLETADO
+  → C-07 usuarios-y-asignaciones                   [Agente A] ✅
+  → C-15 avisos-y-acknowledgment                   [Agente B] ✅
+  → C-17 programas-y-fechas-academicas             [Agente B] ✅
 
-GATE 6: C-07 ✓                                     ← FORK ANCHO (usuarios + asignaciones listos)
+GATE 6: C-07 ✓                                     ← FORK ANCHO (en progreso)
   → C-08 equipos-docentes                          [Agente A]
   → C-09 padron-ingesta-moodle                     [Agente B]
-  → C-13 encuentros-y-guardias                     [Agente A]
+  → C-13 encuentros-y-guardias                      [Agente A]
   → C-14 evaluaciones-y-coloquios                  [Agente B]
-  → C-16 tareas-internas                           [Agente C]
+  → C-16 tareas-internas                           [Agente C] ✅
   → C-18 liquidaciones-y-honorarios                [Agente C]
-  → C-19 panel-auditoria-metricas                  [Agente C — si C-05 ✓]
-  → C-20 perfil-y-mensajeria-interna               [Agente C]
+  → C-19 panel-auditoria-metricas                  [Agente C]
+  → C-20 perfil-y-mensajeria-interna               [Agente C] ✅
 
 GATE 7: C-09 ✓
   → C-10 calificaciones-y-umbral                   [Agente B]
@@ -109,19 +109,19 @@ C-01 → C-02 → C-03 → C-04 → C-06 → C-07 → C-09 → C-10 → C-11 →
 
 | Paso | Agente A (Backend Core) | Agente B (Backend Aux) | Agente C (Frontend / Soporte) |
 |------|--------------------------|-------------------------|--------------------------------|
-| 1 | C-01 foundation-setup | — | — |
-| 2 | C-02 core-models-y-tenancy | — | — |
-| 3 | C-03 auth-jwt-2fa | — | — |
-| 4 | C-04 rbac-permisos-finos | — | — |
-| 5 | C-06 estructura-academica | C-05 audit-log | C-21 frontend-shell-y-auth |
-| 6 | C-07 usuarios-y-asignaciones | C-17 programas-y-fechas | C-15 avisos-y-acknowledgment |
-| 7 | C-08 equipos-docentes | C-09 padron-ingesta-moodle | C-20 perfil-y-mensajeria |
-| 8 | C-13 encuentros-y-guardias | C-10 calificaciones-y-umbral | C-16 tareas-internas |
+| 1 | C-01 foundation-setup ✅ | — | — |
+| 2 | C-02 core-models-y-tenancy ✅ | — | — |
+| 3 | C-03 auth-jwt-2fa ✅ | — | — |
+| 4 | C-04 rbac-permisos-finos ✅ | — | — |
+| 5 | C-06 estructura-academica ✅ | C-05 audit-log ✅ | C-21 frontend-shell-y-auth ✅ |
+| 6 | C-07 usuarios-y-asignaciones ✅ | C-17 programas-y-fechas ✅ | C-15 avisos-y-acknowledgment ✅ |
+| 7 | C-08 equipos-docentes ✅ | C-09 padron-ingesta-moodle | C-20 perfil-y-mensajeria ✅ |
+| 8 | C-13 encuentros-y-guardias | C-10 calificaciones-y-umbral | C-16 tareas-internas ✅ |
 | 9 | C-14 evaluaciones-y-coloquios | C-11 analisis-atrasados-reportes | C-18 liquidaciones-y-honorarios |
 | 10 | C-19 panel-auditoria-metricas | C-12 comunicaciones-cola-worker | C-22 frontend-academico-docente |
 | 11 | — | C-23 frontend-coordinacion | C-24 frontend-finanzas-y-admin |
 
-> Los 3 agentes convergen alrededor del paso 10-11. El Agente A queda libre antes y puede tomar `C-19` o adelantar refactors.
+> Los 3 agentes convergen alrededor del paso 10-11. Pasos 1-6 completados.
 
 ---
 
@@ -274,7 +274,7 @@ C-01 → C-02 → C-03 → C-04 → C-06 → C-07 → C-09 → C-10 → C-11 →
 > Todos dependen de `C-07` (usuarios + asignaciones). Se pueden repartir entre los 3 agentes en paralelo.
 
 ### [C-08] `equipos-docentes`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado
 - **Scope**:
   - Vistas/endpoints sobre `Asignacion`: mis-equipos del docente (F4.2), gestión de asignaciones (F4.3).
   - Asignación masiva (F4.4): bloque docentes × materia × carrera × cohorte × rol con vigencia.
@@ -354,7 +354,7 @@ C-01 → C-02 → C-03 → C-04 → C-06 → C-07 → C-09 → C-10 → C-11 →
   - `knowledge-base/08_arquitectura_propuesta.md` §5.2 (worker de cola)
 
 ### [C-13] `encuentros-y-guardias`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado
 - **Scope**:
   - Modelos `SlotEncuentro`, `InstanciaEncuentro`, `Guardia`.
   - Crear encuentro recurrente (F6.1, RN-13): genera todas las instancias del slot. Encuentro único (F6.2). Editar instancia (F6.3: estado, meet_url, video_url, comentario).
@@ -371,7 +371,7 @@ C-01 → C-02 → C-03 → C-04 → C-06 → C-07 → C-09 → C-10 → C-11 →
   - `knowledge-base/07_flujos_principales.md` FL-06 (encuentros recurrentes)
 
 ### [C-14] `evaluaciones-y-coloquios`
-- **Estado**: `[ ]` pendiente
+- **Estado**: `[x]` completado
 - **Scope**:
   - Modelos `Evaluacion`, `ReservaEvaluacion`, `ResultadoEvaluacion`.
   - Crear convocatoria de coloquio (F7.3): materia, instancia, días y cupos. Importar alumnos a convocatoria (F7.2). Listado de convocatorias (F7.4). Panel de métricas (F7.1). Admin global (F7.5).
@@ -469,7 +469,7 @@ C-01 → C-02 → C-03 → C-04 → C-06 → C-07 → C-09 → C-10 → C-11 →
 > `C-21` es el shell común. Las features (C-22/23/24) consumen los endpoints ya construidos en backend.
 
 ### [C-21] `frontend-shell-y-auth`
-- **Estado**: `[x]` archivado
+- **Estado**: `[x]` completado
 - **Scope**:
   - Scaffolding React 18 + TypeScript + Vite. Estructura feature-based. Tailwind, TanStack Query, React Hook Form + Zod, Axios.
   - Cliente HTTP centralizado: interceptor de auth + **refresh transparente** de tokens. Manejo de 401/403.

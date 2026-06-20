@@ -18,12 +18,16 @@ from app.api.v1.programas import router as programas_router
 from app.api.v1.fechas_academicas import router as fechas_academicas_router
 from app.api.v1.routers.admin_usuarios import router as admin_usuarios_router
 from app.api.v1.routers.asignaciones import router as asignaciones_router
+from app.api.v1.routers.equipos import router as equipos_router
 from app.api.v1.routers.tareas import router as tareas_router
 from app.api.v1.routers.avisos import router as avisos_router
 from app.api.v1.routers.perfil import router as perfil_router
+from app.api.v1.routers.coloquios import router as coloquios_router
 from app.api.v1.routers.inbox import router as inbox_router
 from app.api.v1.routers.auditoria import router as auditoria_router
 from app.api.v1.routers.padron import router as padron_router
+from app.api.v1.routers.encuentros import router as encuentros_router
+from app.api.v1.routers.guardias import router as guardias_router
 from app.core.dependencies import get_engine, get_settings
 from app.core.logging import setup_json_logging
 from app.core.observability import setup_observability
@@ -59,12 +63,16 @@ def create_app() -> FastAPI:
     app.include_router(fechas_academicas_router)
     app.include_router(admin_usuarios_router)
     app.include_router(asignaciones_router)
+    app.include_router(equipos_router)
     app.include_router(tareas_router)
     app.include_router(avisos_router)
     app.include_router(perfil_router)
+    app.include_router(coloquios_router)
     app.include_router(inbox_router)
     app.include_router(auditoria_router)
     app.include_router(padron_router)
+    app.include_router(encuentros_router)
+    app.include_router(guardias_router)
     return app
 
 
