@@ -28,6 +28,7 @@ class _AuditCodes:
 
     # ── Padrón ────────────────────────────────────────────────────────────
     PADRON_CARGAR: str = "PADRON_CARGAR"
+    PADRON_VACIAR: str = "PADRON_VACIAR"
 
     # ── Comunicación ──────────────────────────────────────────────────────
     COMUNICACION_ENVIAR: str = "COMUNICACION_ENVIAR"

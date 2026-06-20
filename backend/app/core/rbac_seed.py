@@ -181,6 +181,19 @@ PERMISOS: list[tuple[str, str, str, str]] = [
         "usar",
         "Impersonar a otro usuario (suplantación legítima)",
     ),
+    # Padrón
+    (
+        "padron:cargar",
+        "padron",
+        "cargar",
+        "Cargar padrón de alumnos (archivo o sync Moodle)",
+    ),
+    (
+        "padron:vaciar",
+        "padron",
+        "vaciar",
+        "Vaciar datos de padrón de una materia",
+    ),
 ]
 
 # ---------------------------------------------------------------------------
@@ -225,6 +238,8 @@ MATRIZ_BASE: list[tuple[str, str, str]] = [
     (ROLE_PROFESOR, "encuentros:gestionar", "propio"),
     (ROLE_PROFESOR, "guardias:registrar", "propio"),
     (ROLE_PROFESOR, "tareas:gestionar", "propio"),
+    (ROLE_PROFESOR, "padron:cargar", "propio"),
+    (ROLE_PROFESOR, "padron:vaciar", "propio"),
     # -- COORDINADOR --
     (ROLE_COORDINADOR, "avisos:confirmar", "global"),
     (ROLE_COORDINADOR, "calificaciones:importar", "global"),
@@ -239,6 +254,8 @@ MATRIZ_BASE: list[tuple[str, str, str]] = [
     (ROLE_COORDINADOR, "equipos:asignar", "global"),
     (ROLE_COORDINADOR, "estructura:ver", "global"),
     (ROLE_COORDINADOR, "auditoria:ver", "propio"),
+    (ROLE_COORDINADOR, "padron:cargar", "global"),
+    (ROLE_COORDINADOR, "padron:vaciar", "global"),
     # -- NEXO (enlace transversal institución ↔ docentes/alumnos) --
     (ROLE_NEXO, "avisos:confirmar", "global"),
     (ROLE_NEXO, "avisos:publicar", "global"),

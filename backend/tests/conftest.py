@@ -101,6 +101,83 @@ async def db_session(db_engine) -> AsyncSession:
 
 
 @pytest.fixture(scope="function")
+async def materia(db_session, tenant_factory):
+    t = await tenant_factory(db_session)
+    from app.models.materia import Materia
+
+    m = Materia(id=uuid.uuid4(), tenant_id=t.id, codigo="M01", nombre="Matemática")
+    db_session.add(m)
+    await db_session.commit()
+    await db_session.refresh(m)
+    return t, m
+
+
+@pytest.fixture(scope="function")
+async def cohorte(db_session, materia):
+    t, m = materia
+    from app.models.carrera import Carrera, EstadoCarrera
+    from app.models.cohorte import Cohorte
+
+    car = Carrera(
+        id=uuid.uuid4(),
+        tenant_id=t.id,
+        codigo="CAR01",
+        nombre="Ingeniería",
+        estado=EstadoCarrera.Activa,
+    )
+    db_session.add(car)
+    await db_session.flush()
+
+    c = Cohorte(
+        id=uuid.uuid4(),
+        tenant_id=t.id,
+        carrera_id=car.id,
+        nombre="2025",
+        anio=2025,
+        vig_desde="2025-01-01",
+        vig_hasta="2025-12-31",
+    )
+    db_session.add(c)
+    await db_session.commit()
+    await db_session.refresh(c)
+    return t, m, c
+
+
+@pytest.fixture(scope="function")
+async def user_factory(db_session: AsyncSession):
+    """Fixture que crea un User de prueba y retorna la factory function.
+
+    Uso:
+        user = await user_factory(db_session, tenant_id=t.id)
+    """
+
+    async def _make_user(
+        session: AsyncSession | None = None,
+        tenant_id: uuid.UUID | None = None,
+        email: str = "test@example.com",
+    ) -> "User":
+        from app.core.security import encryption_service, email_lookup_hash
+        from app.models.user import User
+
+        sess = session or db_session
+        u = User(
+            id=uuid.uuid4(),
+            tenant_id=tenant_id or uuid.uuid4(),
+            email_encrypted=encryption_service.encrypt(email),
+            email_lookup=email_lookup_hash(email),
+            password_hash="$argon2id$test",
+            legajo=f"LEG-{uuid.uuid4().hex[:8]}",
+            is_active=True,
+        )
+        sess.add(u)
+        await sess.commit()
+        await sess.refresh(u)
+        return u
+
+    return _make_user
+
+
+@pytest.fixture(scope="function")
 async def tenant_factory(db_session: AsyncSession):
     """Fixture que crea un Tenant de prueba y retorna una factory function.
 

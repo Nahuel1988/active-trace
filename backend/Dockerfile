@@ -36,4 +36,6 @@ RUN pip install --no-cache-dir \
     "pytest>=8.3.0" \
     "pytest-asyncio>=0.24.0" \
     "httpx>=0.28.0" \
-    "pytest-cov>=6.0.0"
+    "pytest-cov>=6.0.0" \
+    "email-validator>=2.0.0" \
+    "python-multipart>=0.0.9"
