@@ -95,10 +95,13 @@ api.interceptors.response.use(
 
     // ── 401: refresh transparente ──
     if (error.response?.status === 401 && !originalRequest._retry) {
-      // Si la request que falló ES el refresh, no reintentar — sesión expiró
+      // Si la request que falló ES el refresh, no reintentar — sesión expiró.
+      // No redirigir si ya estamos en /login (evita loop infinito en refresh silencioso inicial).
       if (originalRequest.url === '/api/auth/refresh') {
         onSessionExpiredHandler?.();
-        window.location.href = '/login';
+        if (!window.location.pathname.startsWith('/login')) {
+          window.location.href = '/login';
+        }
         return Promise.reject(error);
       }
 

@@ -110,7 +110,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setOnSessionExpired(() => {
       clearSession();
-      window.location.href = '/login';
+      if (!window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login';
+      }
     });
     return () => {
       setOnSessionExpired(null);
