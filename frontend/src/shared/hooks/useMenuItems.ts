@@ -70,6 +70,21 @@ const sidebarItems: SidebarItem[] = [
     path: '/comunicaciones',
     permission: 'comunicacion:enviar',
   },
+  {
+    label: 'Finanzas',
+    path: '/finanzas',
+    permission: 'liquidaciones:ver',
+  },
+  {
+    label: 'Usuarios',
+    path: '/admin/usuarios',
+    permission: 'usuarios:gestionar',
+  },
+  {
+    label: 'Auditoría',
+    path: '/admin/auditoria',
+    permission: 'auditoria:ver',
+  },
 ];
 
 export { sidebarItems };
@@ -86,6 +101,9 @@ export function useMenuItems(): SidebarItem[] {
   const canImportar = usePermission('calificaciones:importar');
   const canAtrasados = usePermission('atrasados:ver');
   const canComunicaciones = usePermission('comunicacion:enviar');
+  const canFinanzas = usePermission('liquidaciones:ver');
+  const canUsuarios = usePermission('usuarios:gestionar');
+  const canAuditoria = usePermission('auditoria:ver');
 
   const permMap: Record<string, boolean> = {
     'equipos:asignar': canEquipos,
@@ -98,6 +116,9 @@ export function useMenuItems(): SidebarItem[] {
     'calificaciones:importar': canImportar,
     'atrasados:ver': canAtrasados,
     'comunicacion:enviar': canComunicaciones,
+    'liquidaciones:ver': canFinanzas,
+    'usuarios:gestionar': canUsuarios,
+    'auditoria:ver': canAuditoria,
   };
 
   return sidebarItems.filter((item) => {

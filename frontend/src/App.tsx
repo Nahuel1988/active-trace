@@ -53,6 +53,25 @@ const SlotDetailPage = lazy(() => import('@/features/encuentros/pages/SlotDetail
 
 const GuardiasListPage = lazy(() => import('@/features/guardias/pages/GuardiasListPage'));
 
+// Finanzas
+const LiquidacionesPage = lazy(() => import('@/features/finanzas/pages/LiquidacionesPage'));
+const HistorialLiquidacionesPage = lazy(() => import('@/features/finanzas/pages/HistorialLiquidacionesPage'));
+const GrillaSalarialPage = lazy(() => import('@/features/finanzas/pages/GrillaSalarialPage'));
+const FacturasListPage = lazy(() => import('@/features/finanzas/pages/FacturasListPage'));
+
+// Admin Usuarios
+const UsuariosListPage = lazy(() => import('@/features/admin/pages/UsuariosListPage'));
+const UsuarioFormPage = lazy(() => import('@/features/admin/pages/UsuarioFormPage'));
+const UsuarioDetailPage = lazy(() => import('@/features/admin/pages/UsuarioDetailPage'));
+
+// Admin Auditoría
+const AuditoriaPanelPage = lazy(() => import('@/features/admin/pages/AuditoriaPanelPage'));
+const AuditoriaLogPage = lazy(() => import('@/features/admin/pages/AuditoriaLogPage'));
+
+// Estructura (new pages)
+const CohortesListPage = lazy(() => import('@/features/estructura/pages/CohortesListPage'));
+const MateriasListPage = lazy(() => import('@/features/estructura/pages/MateriasListPage'));
+
 // ── Fallback global ─────────────────────────────────────────────────────────
 function PageSuspense({ children }: { children: React.ReactNode }) {
   return (

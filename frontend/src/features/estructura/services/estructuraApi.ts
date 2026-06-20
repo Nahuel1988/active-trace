@@ -10,6 +10,10 @@ import type {
   FechaAcademicaFormData,
   FechaAcademicaUpdateData,
   CalendarioItem,
+  Cohorte,
+  CohorteFormData,
+  Materia,
+  MateriaFormData,
 } from '@/features/estructura/types';
 
 // ── Carreras ────────────────────────────────────────────────────────────────
@@ -72,4 +76,42 @@ export function fetchCalendario(params?: {
   return api
     .get('/api/v1/fechas-academicas/calendario', { params })
     .then((r) => r.data);
+}
+
+// ── Cohortes ─────────────────────────────────────────────────────────────────
+
+export function fetchCohortes(): Promise<Cohorte[]> {
+  return api.get('/api/v1/cohortes').then((r) => r.data);
+}
+
+export function crearCohorte(data: CohorteFormData): Promise<Cohorte> {
+  return api.post('/api/v1/cohortes', data).then((r) => r.data);
+}
+
+export function actualizarCohorte(
+  id: string,
+  data: Partial<CohorteFormData>,
+): Promise<Cohorte> {
+  return api.put(`/api/v1/cohortes/${id}`, data).then((r) => r.data);
+}
+
+export function eliminarCohorte(id: string): Promise<void> {
+  return api.delete(`/api/v1/cohortes/${id}`).then(() => undefined);
+}
+
+// ── Materias ─────────────────────────────────────────────────────────────────
+
+export function fetchMaterias(): Promise<Materia[]> {
+  return api.get('/api/v1/materias').then((r) => r.data);
+}
+
+export function crearMateria(data: MateriaFormData): Promise<Materia> {
+  return api.post('/api/v1/materias', data).then((r) => r.data);
+}
+
+export function actualizarMateria(
+  id: string,
+  data: Partial<MateriaFormData>,
+): Promise<Materia> {
+  return api.put(`/api/v1/materias/${id}`, data).then((r) => r.data);
 }

@@ -6,6 +6,8 @@ import type {
   CarreraFormData,
   FechaAcademicaFormData,
   FechaAcademicaUpdateData,
+  CohorteFormData,
+  MateriaFormData,
 } from '@/features/estructura/types';
 
 export const estructuraKeys = {
@@ -17,6 +19,8 @@ export const estructuraKeys = {
     [...estructuraKeys.all, 'fechas', filters] as const,
   calendario: (filters?: Record<string, string | undefined>) =>
     [...estructuraKeys.all, 'calendario', filters] as const,
+  cohortes: () => [...estructuraKeys.all, 'cohortes'] as const,
+  materias: () => [...estructuraKeys.all, 'materias'] as const,
 };
 
 // ── Carreras ────────────────────────────────────────────────────────────────
@@ -112,5 +116,75 @@ export function useCalendario(filters?: {
       filters as Record<string, string | undefined>,
     ),
     queryFn: () => api.fetchCalendario(filters),
+  });
+}
+
+// ── Cohortes ─────────────────────────────────────────────────────────────────
+
+export function useCohortes() {
+  return useQuery({
+    queryKey: estructuraKeys.cohortes(),
+    queryFn: api.fetchCohortes,
+  });
+}
+
+export function useCrearCohorte() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CohorteFormData) => api.crearCohorte(data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: estructuraKeys.cohortes() });
+    },
+  });
+}
+
+export function useActualizarCohorte() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<CohorteFormData> }) =>
+      api.actualizarCohorte(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: estructuraKeys.cohortes() });
+    },
+  });
+}
+
+export function useEliminarCohorte() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.eliminarCohorte(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: estructuraKeys.cohortes() });
+    },
+  });
+}
+
+// ── Materias ─────────────────────────────────────────────────────────────────
+
+export function useMaterias() {
+  return useQuery({
+    queryKey: estructuraKeys.materias(),
+    queryFn: api.fetchMaterias,
+  });
+}
+
+export function useCrearMateria() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: MateriaFormData) => api.crearMateria(data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: estructuraKeys.materias() });
+    },
+  });
+}
+
+export function useActualizarMateria() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<MateriaFormData> }) =>
+      api.actualizarMateria(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: estructuraKeys.materias() });
+    },
   });
 }

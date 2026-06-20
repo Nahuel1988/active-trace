@@ -64,3 +64,41 @@ export interface CalendarioItem {
   periodo: string;
   fechas: FechaAcademica[];
 }
+
+// ── Cohortes ─────────────────────────────────────────────────────────────────
+
+export interface Cohorte {
+  id: string;
+  tenant_id: string;
+  etiqueta: string;
+  carrera_id: string;
+  fecha_inicio: string;
+  fecha_fin: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CohorteFormData {
+  etiqueta: string;
+  carrera_id: string;
+  fecha_inicio: string;
+  fecha_fin?: string;
+}
+
+// ── Materias ─────────────────────────────────────────────────────────────────
+
+export type ClavePlus = 'PROG' | 'BD' | 'ARQ' | 'MAT' | 'MET';
+
+export interface Materia {
+  id: string;
+  tenant_id: string;
+  nombre: string;
+  clave_plus: ClavePlus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MateriaFormData {
+  nombre: string;
+  clave_plus: ClavePlus;
+}
