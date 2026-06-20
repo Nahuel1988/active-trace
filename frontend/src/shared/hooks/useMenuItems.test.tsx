@@ -14,7 +14,7 @@ import { useMenuItems } from './useMenuItems';
 describe('useMenuItems', () => {
   it('filters items based on permissions — only allowed items shown', () => {
     mockUsePermission.mockImplementation((perm: string) => {
-      const allowed = ['equipos:asignar', 'avisos:publicar', 'tareas:gestionar'];
+      const allowed = ['equipos:asignar', 'avisos:publicar', 'tareas:gestionar', 'calificaciones:importar'];
       return allowed.includes(perm);
     });
 
@@ -34,7 +34,7 @@ describe('useMenuItems', () => {
     render(<TestComponent />);
 
     const renderedItems = screen.getAllByTestId('menu-item').map((el) => el.textContent);
-    expect(renderedItems).toEqual(['Inicio', 'Equipos docentes', 'Avisos', 'Tareas']);
+    expect(renderedItems).toEqual(['Inicio', 'Equipos docentes', 'Avisos', 'Tareas', 'Importar padr\u00f3n/calificaciones']);
   });
 
   it('returns Inicio when no permissions granted', () => {
@@ -87,6 +87,9 @@ describe('useMenuItems', () => {
       'Estructura',
       'Encuentros',
       'Guardias',
+      'Importar padrón/calificaciones',
+      'Atrasados',
+      'Comunicaciones',
     ]);
   });
 });

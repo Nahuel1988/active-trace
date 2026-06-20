@@ -21,6 +21,10 @@ const ForbiddenPage = lazy(
 const AppLayout = lazy(() => import('@/shared/components/AppLayout'));
 
 // ── Domain feature pages ────────────────────────────────────────────────────
+const ImportPage = lazy(() => import('@/features/importacion/pages/ImportPage'));
+const AtrasadosDashboardPage = lazy(() => import('@/features/atrasados/pages/AtrasadosDashboardPage'));
+const ComunicacionesQueuePage = lazy(() => import('@/features/comunicaciones/pages/ComunicacionesQueuePage'));
+
 const EquiposListPage = lazy(() => import('@/features/equipos/pages/EquiposListPage'));
 const MisEquiposPage = lazy(() => import('@/features/equipos/pages/MisEquiposPage'));
 const AsignacionMasivaPage = lazy(() => import('@/features/equipos/pages/AsignacionMasivaPage'));
@@ -178,6 +182,30 @@ function App() {
               element={<ProtectedRoute permission="guardias:registrar" />}
             >
               <Route index element={<GuardiasListPage />} />
+            </Route>
+
+            {/* Importar padrón/calificaciones */}
+            <Route
+              path="importar"
+              element={<ProtectedRoute permission="calificaciones:importar" />}
+            >
+              <Route index element={<ImportPage />} />
+            </Route>
+
+            {/* Atrasados */}
+            <Route
+              path="atrasados"
+              element={<ProtectedRoute permission="atrasados:ver" />}
+            >
+              <Route index element={<AtrasadosDashboardPage />} />
+            </Route>
+
+            {/* Comunicaciones */}
+            <Route
+              path="comunicaciones"
+              element={<ProtectedRoute permission="comunicacion:enviar" />}
+            >
+              <Route index element={<ComunicacionesQueuePage />} />
             </Route>
           </Route>
         </Route>

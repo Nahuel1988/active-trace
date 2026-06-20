@@ -55,6 +55,21 @@ const sidebarItems: SidebarItem[] = [
     path: '/guardias',
     permission: 'guardias:registrar',
   },
+  {
+    label: 'Importar padrón/calificaciones',
+    path: '/importar',
+    permission: 'calificaciones:importar',
+  },
+  {
+    label: 'Atrasados',
+    path: '/atrasados',
+    permission: 'atrasados:ver',
+  },
+  {
+    label: 'Comunicaciones',
+    path: '/comunicaciones',
+    permission: 'comunicacion:enviar',
+  },
 ];
 
 export { sidebarItems };
@@ -68,6 +83,9 @@ export function useMenuItems(): SidebarItem[] {
   const canEstructura = usePermission('estructura:gestionar');
   const canEncuentros = usePermission('encuentros:gestionar');
   const canGuardias = usePermission('guardias:registrar');
+  const canImportar = usePermission('calificaciones:importar');
+  const canAtrasados = usePermission('atrasados:ver');
+  const canComunicaciones = usePermission('comunicacion:enviar');
 
   const permMap: Record<string, boolean> = {
     'equipos:asignar': canEquipos,
@@ -77,6 +95,9 @@ export function useMenuItems(): SidebarItem[] {
     'estructura:gestionar': canEstructura,
     'encuentros:gestionar': canEncuentros,
     'guardias:registrar': canGuardias,
+    'calificaciones:importar': canImportar,
+    'atrasados:ver': canAtrasados,
+    'comunicacion:enviar': canComunicaciones,
   };
 
   return sidebarItems.filter((item) => {
