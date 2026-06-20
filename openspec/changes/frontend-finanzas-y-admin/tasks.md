@@ -2,34 +2,34 @@
 
 ## 1. Finanzas — Types, Services, Query Keys
 
-- [ ] 1.1 Create `features/finanzas/types/index.ts` with `LiquidacionVista`, `SegmentoLiquidacion`, `LiquidacionItem`, `KpisLiquidacion`, `HistorialFilters`, `SalarioBase`, `SalarioPlus`, `SalarioBaseFormData`, `SalarioPlusFormData`, `Factura`, `FacturaFormData`, `FacturaFilters`, `EstadoFactura` — sin `any`, en `snake_case`
-- [ ] 1.2 Create `features/finanzas/services/liquidacionesApi.ts` — `fetchLiquidaciones(cohorteId, periodo, usuarioId?)`, `cerrarLiquidacion(id)`, `fetchHistorial(filters)`, `calcularPeriodo(cohorteId, periodo)`
-- [ ] 1.3 Create `features/finanzas/services/grillaApi.ts` — `fetchSalariosBase(rol?)`, `crearSalarioBase`, `actualizarSalarioBase`, `eliminarSalarioBase`, `fetchSalariosPlus(grupo?)`, `crearSalarioPlus`, `actualizarSalarioPlus`, `eliminarSalarioPlus`
-- [ ] 1.4 Create `features/finanzas/services/facturasApi.ts` — `fetchFacturas(filters)`, `fetchFactura(id)`, `crearFactura`, `actualizarFactura`, `abonarFactura(id)`
-- [ ] 1.5 Create query key factories: `liquidacionesKeys.ts`, `grillaKeys.ts`, `facturasKeys.ts` (D-02)
+- [x] 1.1 Create `features/finanzas/types/index.ts` with `LiquidacionVista`, `SegmentoLiquidacion`, `LiquidacionItem`, `KpisLiquidacion`, `HistorialFilters`, `SalarioBase`, `SalarioPlus`, `SalarioBaseFormData`, `SalarioPlusFormData`, `Factura`, `FacturaFormData`, `FacturaFilters`, `EstadoFactura` — sin `any`, en `snake_case`
+- [x] 1.2 Create `features/finanzas/services/liquidacionesApi.ts` — `fetchLiquidaciones(cohorteId, periodo, usuarioId?)`, `cerrarLiquidacion(id)`, `fetchHistorial(filters)`, `calcularPeriodo(cohorteId, periodo)`
+- [x] 1.3 Create `features/finanzas/services/grillaApi.ts` — `fetchSalariosBase(rol?)`, `crearSalarioBase`, `actualizarSalarioBase`, `eliminarSalarioBase`, `fetchSalariosPlus(grupo?)`, `crearSalarioPlus`, `actualizarSalarioPlus`, `eliminarSalarioPlus`
+- [x] 1.4 Create `features/finanzas/services/facturasApi.ts` — `fetchFacturas(filters)`, `fetchFactura(id)`, `crearFactura`, `actualizarFactura`, `abonarFactura(id)`
+- [x] 1.5 Create query key factories: `liquidacionesKeys.ts`, `grillaKeys.ts`, `facturasKeys.ts` (D-02)
 
 ## 2. Finanzas — Liquidaciones (vista, cierre, historial)
 
-- [ ] 2.1 Create `hooks/useLiquidaciones.ts` — `useLiquidaciones(cohorteId, periodo, usuarioId?)`, `useHistorial(filters)` keyed por scope/filtros
-- [ ] 2.2 Create `hooks/useLiquidacionMutations.ts` — `useCerrarLiquidacion()` (invalida vista + historial), `useCalcularPeriodo()` (invalida vista)
-- [ ] 2.3 Create `components/PeriodoSelector.tsx` — input month sincronizado con query param `?periodo=` (D-01)
-- [ ] 2.4 Create `components/KpisCabecera.tsx` — 2 stat cards: `total_sin_factura`, `total_con_factura`
-- [ ] 2.5 Create `components/SegmentoTable.tsx` — tabla reutilizable de un segmento (docente, rol, monto)
-- [ ] 2.6 Create `components/LiquidacionSegmentada.tsx` — orquesta `KpisCabecera` + 3 `SegmentoTable` (general/nexo/facturantes) + estado vacío
-- [ ] 2.7 Create `components/CerrarLiquidacionDialog.tsx` — modal de confirmación; maneja 409 (ya cerrada) como error inline (D-03)
-- [ ] 2.8 Create `components/HistorialTable.tsx` — tabla de cerradas con filtros independientes (cohorte, período, docente)
-- [ ] 2.9 Create `pages/LiquidacionesPage.tsx` — `PeriodoSelector` + `LiquidacionSegmentada` + acciones calcular/cerrar/exportar condicionadas por permiso (D-07); usa `useComisionContext` para cohorte
-- [ ] 2.10 Create `pages/HistorialLiquidacionesPage.tsx` — `HistorialTable` con filtros
+- [x] 2.1 Create `hooks/useLiquidaciones.ts` — `useLiquidaciones(cohorteId, periodo, usuarioId?)`, `useHistorial(filters)` keyed por scope/filtros
+- [x] 2.2 Create `hooks/useLiquidacionMutations.ts` — `useCerrarLiquidacion()` (invalida vista + historial), `useCalcularPeriodo()` (invalida vista)
+- [x] 2.3 Create `components/PeriodoSelector.tsx` — input month sincronizado con query param `?periodo=` (D-01)
+- [x] 2.4 Create `components/KpisCabecera.tsx` — 2 stat cards: `total_sin_factura`, `total_con_factura`
+- [x] 2.5 Create `components/SegmentoTable.tsx` — tabla reutilizable de un segmento (docente, rol, monto)
+- [x] 2.6 Create `components/LiquidacionSegmentada.tsx` — orquesta `KpisCabecera` + 3 `SegmentoTable` (general/nexo/facturantes) + estado vacío
+- [x] 2.7 Create `components/CerrarLiquidacionDialog.tsx` — modal de confirmación; maneja 409 (ya cerrada) como error inline (D-03)
+- [x] 2.8 Create `components/HistorialTable.tsx` — tabla de cerradas con filtros independientes (cohorte, período, docente)
+- [x] 2.9 Create `pages/LiquidacionesPage.tsx` — `PeriodoSelector` + `LiquidacionSegmentada` + acciones calcular/cerrar/exportar condicionadas por permiso (D-07); usa `useComisionContext` para cohorte
+- [x] 2.10 Create `pages/HistorialLiquidacionesPage.tsx` — `HistorialTable` con filtros
 
 ## 3. Finanzas — Grilla salarial (Base + Plus)
 
-- [ ] 3.1 Create `hooks/useGrilla.ts` — `useSalariosBase(rol?)`, `useSalariosPlus(grupo?)`
-- [ ] 3.2 Create `hooks/useGrillaMutations.ts` — crear/actualizar/eliminar base y plus; cada mutación invalida su lista
-- [ ] 3.3 Create `components/SalarioBaseTable.tsx` — tabla ABM con filtro por rol y acciones
-- [ ] 3.4 Create `components/SalarioBaseFormDialog.tsx` — modal RHF+Zod (rol, monto, desde, hasta); 409 solapamiento → error inline en campo vigencia (D-03)
-- [ ] 3.5 Create `components/SalarioPlusTable.tsx` — tabla ABM con filtro por grupo
-- [ ] 3.6 Create `components/SalarioPlusFormDialog.tsx` — modal RHF+Zod (grupo, rol, descripcion, monto, desde, hasta); 409 → error inline
-- [ ] 3.7 Create `pages/GrillaSalarialPage.tsx` — pestañas/bloques Base y Plus, cada uno con tabla + form
+- [x] 3.1 Create `hooks/useGrilla.ts` — `useSalariosBase(rol?)`, `useSalariosPlus(grupo?)`
+- [x] 3.2 Create `hooks/useGrillaMutations.ts` — crear/actualizar/eliminar base y plus; cada mutación invalida su lista
+- [x] 3.3 Create `components/SalarioBaseTable.tsx` — tabla ABM con filtro por rol y acciones
+- [x] 3.4 Create `components/SalarioBaseFormDialog.tsx` — modal RHF+Zod (rol, monto, desde, hasta); 409 solapamiento → error inline en campo vigencia (D-03)
+- [x] 3.5 Create `components/SalarioPlusTable.tsx` — tabla ABM con filtro por grupo
+- [x] 3.6 Create `components/SalarioPlusFormDialog.tsx` — modal RHF+Zod (grupo, rol, descripcion, monto, desde, hasta); 409 → error inline
+- [x] 3.7 Create `pages/GrillaSalarialPage.tsx` — pestañas/bloques Base y Plus, cada uno con tabla + form
 
 ## 4. Finanzas — Facturas
 
