@@ -216,3 +216,97 @@ async def tenant_factory(db_session: AsyncSession):
         return t
 
     return _make_tenant
+
+
+@pytest.fixture(scope="function")
+async def version_padron(db_session, cohorte):
+    """Fixture que crea VersionPadron + EntradaPadron.
+
+    Requires ``cohorte`` fixture (which provides tenant + materia + cohorte).
+
+    Returns:
+        tuple[VersionPadron, EntradaPadron].
+    """
+    t, m, c = cohorte
+    from app.models.padron import EntradaPadron, VersionPadron
+
+    vp = VersionPadron(
+        id=uuid.uuid4(),
+        tenant_id=t.id,
+        materia_id=m.id,
+        cohorte_id=c.id,
+        activa=True,
+        total_entradas=1,
+        origen="archivo",
+    )
+    db_session.add(vp)
+    await db_session.flush()
+
+    ep = EntradaPadron(
+        id=uuid.uuid4(),
+        tenant_id=t.id,
+        version_padron_id=vp.id,
+        nombre="Juan",
+        apellidos="Pérez",
+        email_encrypted="cifrado:test",
+        comision="A",
+    )
+    db_session.add(ep)
+    await db_session.commit()
+    await db_session.refresh(vp)
+    await db_session.refresh(ep)
+    return vp, ep
+
+
+@pytest.fixture(scope="function")
+async def asignacion_factory(db_session: AsyncSession):
+    """Fixture que crea una Asignacion de prueba y retorna factory function.
+
+    Uso:
+        asignacion = await asignacion_factory(db_session, tenant_id=t.id, usuario_id=u.id, materia_id=m.id)
+    """
+
+    async def _make_asignacion(
+        session: AsyncSession | None = None,
+        tenant_id: uuid.UUID | None = None,
+        usuario_id: uuid.UUID | None = None,
+        materia_id: uuid.UUID | None = None,
+        role_id: uuid.UUID | None = None,
+    ) -> "Asignacion":
+        from datetime import datetime, timezone
+
+        from app.models.asignacion import Asignacion
+        from app.models.role import Role
+
+        sess = session or db_session
+        # Create a role if not provided
+        if role_id is None:
+            role = Role(
+                id=uuid.uuid4(),
+                tenant_id=tenant_id or uuid.uuid4(),
+                code="PROFESOR",
+                nombre="Profesor",
+            )
+            sess.add(role)
+            await sess.flush()
+            role_id = role.id
+
+        a = Asignacion(
+            id=uuid.uuid4(),
+            tenant_id=tenant_id or uuid.uuid4(),
+            usuario_id=usuario_id or uuid.uuid4(),
+            role_id=role_id,
+            materia_id=materia_id,
+            carrera_id=None,
+            cohorte_id=None,
+            responsable_id=None,
+            comisiones=None,
+            desde=datetime.now(timezone.utc),
+            hasta=None,
+        )
+        sess.add(a)
+        await sess.commit()
+        await sess.refresh(a)
+        return a
+
+    return _make_asignacion

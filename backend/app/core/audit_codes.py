@@ -25,6 +25,8 @@ class _AuditCodes:
 
     # ── Calificaciones ────────────────────────────────────────────────────
     CALIFICACIONES_IMPORTAR: str = "CALIFICACIONES_IMPORTAR"
+    CALIFICACIONES_CONFIGURAR_UMBRAL: str = "CALIFICACIONES_CONFIGURAR_UMBRAL"
+    CALIFICACIONES_VACIAR: str = "CALIFICACIONES_VACIAR"
 
     # ── Padrón ────────────────────────────────────────────────────────────
     PADRON_CARGAR: str = "PADRON_CARGAR"

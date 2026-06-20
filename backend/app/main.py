@@ -25,6 +25,7 @@ from app.api.v1.routers.perfil import router as perfil_router
 from app.api.v1.routers.coloquios import router as coloquios_router
 from app.api.v1.routers.inbox import router as inbox_router
 from app.api.v1.routers.auditoria import router as auditoria_router
+from app.api.v1.routers.calificaciones import router as calificaciones_router
 from app.api.v1.routers.padron import router as padron_router
 from app.api.v1.routers.encuentros import router as encuentros_router
 from app.api.v1.routers.guardias import router as guardias_router
@@ -70,6 +71,7 @@ def create_app() -> FastAPI:
     app.include_router(coloquios_router)
     app.include_router(inbox_router)
     app.include_router(auditoria_router)
+    app.include_router(calificaciones_router)
     app.include_router(padron_router)
     app.include_router(encuentros_router)
     app.include_router(guardias_router)

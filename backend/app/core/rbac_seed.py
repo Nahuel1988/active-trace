@@ -52,6 +52,18 @@ PERMISOS: list[tuple[str, str, str, str]] = [
         "importar",
         "Importar calificaciones",
     ),
+    (
+        "calificaciones:configurar-umbral",
+        "calificaciones",
+        "configurar-umbral",
+        "Configurar umbral de aprobación",
+    ),
+    (
+        "calificaciones:vaciar",
+        "calificaciones",
+        "vaciar",
+        "Vaciar calificaciones propias",
+    ),
     # Atrasados
     (
         "atrasados:ver",
@@ -245,6 +257,8 @@ MATRIZ_BASE: list[tuple[str, str, str]] = [
     # -- PROFESOR --
     (ROLE_PROFESOR, "avisos:confirmar", "global"),
     (ROLE_PROFESOR, "calificaciones:importar", "propio"),
+    (ROLE_PROFESOR, "calificaciones:configurar-umbral", "propio"),
+    (ROLE_PROFESOR, "calificaciones:vaciar", "propio"),
     (ROLE_PROFESOR, "atrasados:ver", "propio"),
     (ROLE_PROFESOR, "atrasados:detectar_sin_corregir", "propio"),
     (ROLE_PROFESOR, "comunicacion:enviar", "propio"),
@@ -256,6 +270,8 @@ MATRIZ_BASE: list[tuple[str, str, str]] = [
     # -- COORDINADOR --
     (ROLE_COORDINADOR, "avisos:confirmar", "global"),
     (ROLE_COORDINADOR, "calificaciones:importar", "global"),
+    (ROLE_COORDINADOR, "calificaciones:configurar-umbral", "global"),
+    (ROLE_COORDINADOR, "calificaciones:vaciar", "global"),
     (ROLE_COORDINADOR, "atrasados:ver", "global"),
     (ROLE_COORDINADOR, "atrasados:detectar_sin_corregir", "global"),
     (ROLE_COORDINADOR, "comunicacion:enviar", "global"),
