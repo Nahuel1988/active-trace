@@ -27,16 +27,27 @@ export interface Asignacion {
   created_at: string;
 }
 
+export interface RoleOption {
+  id: string;
+  code: string;
+  nombre: string;
+}
+
 export interface AsignacionMasivaRequest {
-  materia_id: string;
-  carrera_id: string;
-  cohorte_id: string;
-  rol: string;
-  responsable?: boolean;
+  usuario_ids: string[];
+  role_id: string;
+  materia_id?: string;
+  carrera_id?: string;
+  cohorte_id?: string;
   comisiones: string[];
-  vigencia_desde: string;
-  vigencia_hasta: string;
-  user_ids: string[];
+  responsable_id?: string;
+  desde: string;
+  hasta?: string;
+}
+
+export interface AsignacionMasivaItem {
+  usuario_id: string;
+  motivo: string;
 }
 
 export interface EquipoFilters {
@@ -63,8 +74,8 @@ export interface VigenciaRequest {
 
 export interface AsignacionMasivaResult {
   creadas: number;
-  rechazadas: number;
-  errores?: string[];
+  rechazadas: AsignacionMasivaItem[];
+  omitidas: AsignacionMasivaItem[];
 }
 
 export interface ClonarResult {

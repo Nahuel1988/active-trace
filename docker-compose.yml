@@ -71,8 +71,11 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
+    environment:
+      VITE_API_PROXY_TARGET: "http://api:8000"
     depends_on:
-      - api
+      api:
+        condition: service_started
 
 volumes:
   pgdata:

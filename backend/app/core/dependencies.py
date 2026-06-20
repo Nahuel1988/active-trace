@@ -10,6 +10,9 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import Depends, Header, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+_bearer = HTTPBearer(auto_error=False)
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from app.core.config import Settings
@@ -147,15 +150,15 @@ def get_totp_service() -> "TotpService":  # noqa: F821
 
 
 async def get_current_user(
-    authorization: str | None = Header(default=None),
+    credentials: HTTPAuthorizationCredentials | None = Depends(_bearer),
     db: AsyncSession = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> CurrentUser:
     """Extrae el usuario autenticado desde el JWT access token.
 
-    Lee el header ``Authorization: Bearer <token>``, decodifica el token,
-    carga el ``User`` desde la base de datos y lo envuelve en un
-    ``CurrentUser`` con información de impersonación.
+    Lee el header ``Authorization: Bearer <token>`` vía HTTPBearer
+    (aparece como candado 🔒 en Swagger). Decodifica el token, carga el
+    ``User`` desde la base de datos y lo envuelve en un ``CurrentUser``.
 
     **Security invariant**: la identidad SIEMPRE se toma del JWT, nunca
     de URL / body / query parameters.
@@ -164,15 +167,10 @@ async def get_current_user(
         HTTPException 401: si el token falta, es inválido, o el usuario
             no existe / está inactivo.
     """
-    if authorization is None:
+    if credentials is None:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid authorization header format",
-        )
 
-    token = authorization.removeprefix("Bearer ")
+    token = credentials.credentials
     try:
         payload = decode_token(token)
     except Exception as exc:

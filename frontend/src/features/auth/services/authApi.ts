@@ -2,7 +2,7 @@
 // Wrapper tipado sobre la instancia Axios centralizada para endpoints de auth.
 // Todos los calls pasan por el interceptor de refresh transparente de api.ts.
 
-import { api } from '@/shared/services/api';
+import { api, getAccessToken } from '@/shared/services/api';
 import type {
   LoginRequest,
   LoginResponse,
@@ -14,7 +14,11 @@ export function login(data: LoginRequest): Promise<LoginResponse> {
 }
 
 export function verify2FA(code: string): Promise<LoginResponse> {
-  return api.post('/api/auth/2fa/verify', { code }).then((r) => r.data);
+  // D-01: El challenge JWT se almacenó en memoria durante el login
+  // (ver useLogin.ts linea 31: setAccessToken(response.access_token))
+  // Lo recuperamos para pasarlo al endpoint junto con el código TOTP.
+  const challenge = getAccessToken();
+  return api.post('/api/auth/2fa/verify', { challenge, code }).then((r) => r.data);
 }
 
 export function requestRecovery(email: string): Promise<void> {

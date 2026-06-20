@@ -8,7 +8,12 @@ import type {
   ClonarRequest,
   ClonarResult,
   VigenciaRequest,
+  RoleOption,
 } from '@/features/equipos/types';
+
+export function fetchRoles(): Promise<RoleOption[]> {
+  return api.get('/api/v1/rbac/roles').then((r) => r.data);
+}
 
 export function fetchMisEquipos(): Promise<Equipo[]> {
   return api.get('/api/v1/equipos/mis-equipos').then((r) => r.data);

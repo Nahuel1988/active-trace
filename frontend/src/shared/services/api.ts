@@ -96,12 +96,10 @@ api.interceptors.response.use(
     // ── 401: refresh transparente ──
     if (error.response?.status === 401 && !originalRequest._retry) {
       // Si la request que falló ES el refresh, no reintentar — sesión expiró.
-      // No redirigir si ya estamos en /login (evita loop infinito en refresh silencioso inicial).
+      // El handler onSessionExpired (registrado por AuthContext) se encarga
+      // de limpiar sesión y redirigir a /login si no estamos ya ahí.
       if (originalRequest.url === '/api/auth/refresh') {
         onSessionExpiredHandler?.();
-        if (!window.location.pathname.startsWith('/login')) {
-          window.location.href = '/login';
-        }
         return Promise.reject(error);
       }
 
@@ -130,7 +128,6 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError);
         onSessionExpiredHandler?.();
-        window.location.href = '/login';
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

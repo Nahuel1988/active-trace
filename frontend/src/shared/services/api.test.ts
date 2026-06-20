@@ -164,32 +164,20 @@ describe('api module', () => {
 
   // ── 2.5: Response interceptor (401 refresh flow) ─────────────────────────
   describe('response interceptor — 401 refresh', () => {
-    it('refresh endpoint failure clears session and redirects', async () => {
+    it('refresh endpoint failure calls onSessionExpired handler', async () => {
       const { api, setOnSessionExpired } = await import('./api');
       api.defaults.adapter = mockAdapter.adapter as any;
 
-      const clearSession = vi.fn();
-      setOnSessionExpired(clearSession);
-
-      // Mock location para verificar redirect
-      const originalLocation = window.location;
-      Object.defineProperty(window, 'location', {
-        value: { href: '' },
-        writable: true,
-      });
+      const onSessionExpired = vi.fn();
+      setOnSessionExpired(onSessionExpired);
 
       // La request original devuelve 401, el refresh también 401
       mockAdapter.setDefault({ status: 401 });
       mockAdapter.setResponse('/api/auth/refresh', { status: 401 });
 
       await expect(api.get('/api/protected')).rejects.toThrow();
-      expect(window.location.href).toBe('/login');
-
-      // Restaurar location
-      Object.defineProperty(window, 'location', {
-        value: originalLocation,
-        writable: true,
-      });
+      // El handler registrado debe invocarse (AuthContext redirige a /login)
+      expect(onSessionExpired).toHaveBeenCalled();
     });
 
     it('refresh success retries the original request', async () => {
