@@ -38,30 +38,31 @@ Las cohortes (ej.: "MAR-2026") pueden pertenecer a una carrera específica o ser
 
 ---
 
-### PA-22 — ¿Cuántas claves de Plus existen y cómo se mapean a materias?
+### PA-22 — ¿Cuántas claves de Plus existen y cómo se mapean a materias? ✅ RESUELTA
 
-El modelo de liquidación define un **Plus** por combinación `(clave, rol)`, donde la clave agrupa familias de materias (ej.: `PROG` para materias de Programación). Ver [RN-31](05_reglas_de_negocio.md#rn-31) a [RN-38](05_reglas_de_negocio.md#rn-38).
+El modelo de liquidación define un **Plus** por combinación `(clave, rol)`, donde la clave agrupa familias de materias.
 
-**Preguntas abiertas**:
+**Resolución (2026-06-20)**:
 
-- ¿Cuáles son todas las claves de Plus que existen en el dominio (ej.: `PROG`, `BD`, `ING`, `MAT`, etc.)?
-- ¿Qué materia cae en qué clave? ¿Hay materias sin clave asignada?
-- ¿Ese mapeo es configurable por tenant o está fijo para toda la plataforma?
-- ¿Lo define el ADMIN del tenant o viene preconfigurado desde la institución?
+- **Claves existentes**: `PROG`, `BD`, `ARQ`, `MAT`, `MET`.
+- **Mapeo**: PROG=Programación, BD=Base de Datos, ARQ=Arquitectura de Sistemas, MAT=Matemática, MET=Metodología.
+- **Cobertura**: no hay materias sin clave — toda materia cae en alguna de las 5 claves.
+- **Configuración**: el mapeo es **configurable por tenant**.
+- **Responsable**: lo define el **ADMIN** de cada institución.
 
 ---
 
-### PA-23 — ¿Cómo se calcula el Plus cuando un docente tiene N comisiones de la misma clave?
+### PA-23 — ¿Cómo se calcula el Plus cuando un docente tiene N comisiones de la misma clave? ✅ RESUELTA
 
-Si un PROFESOR tiene tres comisiones de materias que caen bajo la clave `PROG`:
+Si un PROFESOR tiene tres comisiones de materias que caen bajo la clave `PROG`.
 
-**Preguntas abiertas**:
+**Resolución (2026-06-20)**:
 
-- ¿Se acumula `3 × Plus(PROG, PROFESOR)` o se aplica una sola vez sin importar la cantidad de comisiones?
-- ¿Existe un tope de acumulación?
-- ¿La lógica cambia según el rol (TUTOR vs. PROFESOR vs. COORDINADOR)?
+- **Acumulación**: se aplica **una sola vez** `Plus(PROG, PROFESOR)`, independientemente de la cantidad de comisiones bajo esa clave.
+- **Tope**: no hay tope de acumulación.
+- **Rol**: la lógica **no cambia según el rol** — aplica igual para TUTOR, PROFESOR y COORDINADOR.
 
-**Impacto**: es la regla de negocio central del módulo de liquidaciones. Sin ella no se puede implementar el cálculo.
+**Regla de negocio derivada**: `Plus por docente = SUMATORIA de Plus(clave, rol) para cada clave distinta que tenga el docente en sus asignaciones vigentes`.
 
 ---
 
@@ -229,6 +230,8 @@ Las siguientes preguntas que existían en versiones anteriores de este documento
 | PA-06 | Fórmula de liquidación: Base (por rol) + Plus (por clave × rol); ver RN-31 a RN-38 | [05_reglas_de_negocio.md](05_reglas_de_negocio.md) |
 | PA-21 | Impersonación via parámetro de petición: eliminada. La impersonación legítima requiere permiso explícito, sesión diferenciada y auditoría completa | [03_actores_y_roles.md §4](03_actores_y_roles.md), [`docs/ARQUITECTURA.md`](../docs/ARQUITECTURA.md) |
 | PA-25 | NEXO es puente institucional sin carga docente ni administrativa; 6 permisos de enlace transversal (lectura de equipos, alumnos y estructura). Implementado en `rbac_seed.py` y migración `003_rbac` (C-04) | [03_actores_y_roles.md](03_actores_y_roles.md) |
+| PA-22 | Claves de Plus: PROG, BD, ARQ, MAT, MET. Mapeo configurable por tenant, definido por ADMIN. No hay materias sin clave | [10_preguntas_abiertas.md](#pa-22--cuántas-claves-de-plus-existen-y-cómo-se-mapean-a-materias) |
+| PA-23 | Plus se aplica una sola vez por clave, sin tope de acumulación. La lógica no cambia según el rol | [10_preguntas_abiertas.md](#pa-23--cómo-se-calcula-el-plus-cuando-un-docente-tiene-n-comisiones-de-la-misma-clave) |
 
 ---
 
@@ -236,7 +239,7 @@ Las siguientes preguntas que existían en versiones anteriores de este documento
 
 Para resolver las preguntas pendientes se recomienda:
 
-1. **Una sesión de trabajo con el responsable de producto** — cubre las preguntas de dominio (PA-01, PA-22, PA-23 son prioritarias).
+1. **Una sesión de trabajo con el responsable de producto** — cubre las preguntas de dominio (PA-01 sigue siendo prioritaria).
 2. **Revisión del modelo de datos con el equipo técnico** — para validar las entidades y relaciones de [04_modelo_de_datos.md](04_modelo_de_datos.md).
 3. **Sesión de refinamiento con FINANZAS** — para cerrar PA-17, PA-18, PA-24 que afectan el módulo de liquidaciones.
 4. **Cuando se cierre una pregunta**: documentar la resolución en el archivo temático correspondiente y moverla a la tabla de "Decisiones ya cerradas" de este archivo.

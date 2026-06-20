@@ -504,8 +504,8 @@ Incluye RF-57 a RF-60.
 ### Heredadas de la KB
 
 - ~~**OQ-01**~~ — ✅ **CERRADA**: modelo **Materia (catálogo único) + Dictado (instancia por carrera×cohorte)**. Ver [ADR-006 en ARQUITECTURA.md §10](./ARQUITECTURA.md).
-- **OQ-11** — ¿Cómo se mapean las claves de Plus a familias de materias? — [PA-22](../knowledge-base/10_preguntas_abiertas.md#pa-22).
-- **OQ-12** — ¿Cómo se calcula el Plus si un docente tiene N comisiones de la misma clave? — [PA-23](../knowledge-base/10_preguntas_abiertas.md#pa-23).
+- **OQ-11** — ¿Cómo se mapean las claves de Plus a familias de materias? — ✅ [PA-22 resuelta](../knowledge-base/10_preguntas_abiertas.md#pa-22): 5 claves (PROG, BD, ARQ, MAT, MET), mapeo configurable por tenant.
+- **OQ-12** — ¿Cómo se calcula el Plus si un docente tiene N comisiones de la misma clave? — ✅ [PA-23 resuelta](../knowledge-base/10_preguntas_abiertas.md#pa-23): se aplica una sola vez por clave, sin tope.
 - **OQ-13** — ¿Cuál es la semántica del rol NEXO (regional, programa, enlace con el alumno)? — [PA-25](../knowledge-base/10_preguntas_abiertas.md#pa-25).
 
 ### Específicas del PRD
