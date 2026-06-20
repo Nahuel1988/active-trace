@@ -1,0 +1,86 @@
+// ── useMenuItems ──────────────────────────────────────────────────────────────
+// Custom hook que resuelve los items navegables del sidebar según permisos.
+// D-02: Filtrado fuera del render, usePermission llamado en posiciones fijas.
+// Sin hooks violation.
+
+import { usePermission } from '@/shared/hooks/usePermission';
+
+export interface SidebarItem {
+  label: string;
+  path: string;
+  /** Ícono SVG inline opcional */
+  icon?: string;
+  /** Permiso requerido (opcional). Si no se especifica, visible para todos */
+  permission?: string;
+}
+
+const sidebarItems: SidebarItem[] = [
+  {
+    label: 'Inicio',
+    path: '/',
+    icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+  },
+  {
+    label: 'Equipos docentes',
+    path: '/equipos',
+    permission: 'equipos:asignar',
+  },
+  {
+    label: 'Avisos',
+    path: '/avisos',
+    permission: 'avisos:publicar',
+  },
+  {
+    label: 'Tareas',
+    path: '/tareas',
+    permission: 'tareas:gestionar',
+  },
+  {
+    label: 'Coloquios',
+    path: '/coloquios',
+    permission: 'coloquios:gestionar',
+  },
+  {
+    label: 'Estructura',
+    path: '/estructura',
+    permission: 'estructura:gestionar',
+  },
+  {
+    label: 'Encuentros',
+    path: '/encuentros',
+    permission: 'encuentros:gestionar',
+  },
+  {
+    label: 'Guardias',
+    path: '/guardias',
+    permission: 'guardias:registrar',
+  },
+];
+
+export { sidebarItems };
+
+export function useMenuItems(): SidebarItem[] {
+  // Llamar usePermission en posiciones fijas (top-level del hook)
+  const canEquipos = usePermission('equipos:asignar');
+  const canAvisos = usePermission('avisos:publicar');
+  const canTareas = usePermission('tareas:gestionar');
+  const canColoquios = usePermission('coloquios:gestionar');
+  const canEstructura = usePermission('estructura:gestionar');
+  const canEncuentros = usePermission('encuentros:gestionar');
+  const canGuardias = usePermission('guardias:registrar');
+
+  const permMap: Record<string, boolean> = {
+    'equipos:asignar': canEquipos,
+    'avisos:publicar': canAvisos,
+    'tareas:gestionar': canTareas,
+    'coloquios:gestionar': canColoquios,
+    'estructura:gestionar': canEstructura,
+    'encuentros:gestionar': canEncuentros,
+    'guardias:registrar': canGuardias,
+  };
+
+  return sidebarItems.filter((item) => {
+    if (!item.permission) return true;
+    return permMap[item.permission] ?? false;
+  });
+}

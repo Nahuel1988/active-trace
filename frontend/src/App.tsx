@@ -3,7 +3,7 @@
 // Code splitting con React.lazy + Suspense.
 //
 // Rutas públicas: /login, /auth/recovery, /auth/reset, /403
-// Rutas protegidas: / (AppLayout + Outlet)
+// Rutas protegidas: / (AppLayout + Outlet) con features de dominio.
 
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -19,6 +19,35 @@ const ForbiddenPage = lazy(
   () => import('@/shared/components/ForbiddenPage'),
 );
 const AppLayout = lazy(() => import('@/shared/components/AppLayout'));
+
+// ── Domain feature pages ────────────────────────────────────────────────────
+const EquiposListPage = lazy(() => import('@/features/equipos/pages/EquiposListPage'));
+const MisEquiposPage = lazy(() => import('@/features/equipos/pages/MisEquiposPage'));
+const AsignacionMasivaPage = lazy(() => import('@/features/equipos/pages/AsignacionMasivaPage'));
+const ClonarEquipoPage = lazy(() => import('@/features/equipos/pages/ClonarEquipoPage'));
+
+const AvisosListPage = lazy(() => import('@/features/avisos/pages/AvisosListPage'));
+const AvisoFormPage = lazy(() => import('@/features/avisos/pages/AvisoFormPage'));
+
+const TareasListPage = lazy(() => import('@/features/tareas/pages/TareasListPage'));
+const MisTareasPage = lazy(() => import('@/features/tareas/pages/MisTareasPage'));
+const TareaFormPage = lazy(() => import('@/features/tareas/pages/TareaFormPage'));
+const TareaDetailPage = lazy(() => import('@/features/tareas/pages/TareaDetailPage'));
+
+const ColoquiosListPage = lazy(() => import('@/features/coloquios/pages/ColoquiosListPage'));
+const ColoquioFormPage = lazy(() => import('@/features/coloquios/pages/ColoquioFormPage'));
+const ColoquiosAgendaPage = lazy(() => import('@/features/coloquios/pages/ColoquiosAgendaPage'));
+const RegistroAcademicoPage = lazy(() => import('@/features/coloquios/pages/RegistroAcademicoPage'));
+
+const EstructuraHomePage = lazy(() => import('@/features/estructura/pages/EstructuraHomePage'));
+const CarrerasListPage = lazy(() => import('@/features/estructura/pages/CarrerasListPage'));
+const ProgramasListPage = lazy(() => import('@/features/estructura/pages/ProgramasListPage'));
+const FechasAcademicasPage = lazy(() => import('@/features/estructura/pages/FechasAcademicasPage'));
+
+const EncuentrosSlotsPage = lazy(() => import('@/features/encuentros/pages/EncuentrosSlotsPage'));
+const SlotDetailPage = lazy(() => import('@/features/encuentros/pages/SlotDetailPage'));
+
+const GuardiasListPage = lazy(() => import('@/features/guardias/pages/GuardiasListPage'));
 
 // ── Fallback global ─────────────────────────────────────────────────────────
 function PageSuspense({ children }: { children: React.ReactNode }) {
@@ -73,7 +102,83 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<HomePage />} />
-            {/* Acá se agregarán rutas de features de dominio (C-22, C-23, C-24) */}
+
+            {/* Equipos docentes */}
+            <Route
+              path="equipos"
+              element={<ProtectedRoute permission="equipos:asignar" />}
+            >
+              <Route index element={<EquiposListPage />} />
+              <Route path="mis-equipos" element={<MisEquiposPage />} />
+              <Route
+                path="asignacion-masiva"
+                element={<AsignacionMasivaPage />}
+              />
+              <Route path="clonar" element={<ClonarEquipoPage />} />
+            </Route>
+
+            {/* Avisos */}
+            <Route
+              path="avisos"
+              element={<ProtectedRoute permission="avisos:publicar" />}
+            >
+              <Route index element={<AvisosListPage />} />
+              <Route path="nuevo" element={<AvisoFormPage />} />
+              <Route path=":id/editar" element={<AvisoFormPage />} />
+            </Route>
+
+            {/* Tareas */}
+            <Route
+              path="tareas"
+              element={<ProtectedRoute permission="tareas:gestionar" />}
+            >
+              <Route index element={<TareasListPage />} />
+              <Route path="mias" element={<MisTareasPage />} />
+              <Route path="nueva" element={<TareaFormPage />} />
+              <Route path=":id" element={<TareaDetailPage />} />
+            </Route>
+
+            {/* Coloquios */}
+            <Route
+              path="coloquios"
+              element={<ProtectedRoute permission="coloquios:gestionar" />}
+            >
+              <Route index element={<ColoquiosListPage />} />
+              <Route path="nuevo" element={<ColoquioFormPage />} />
+              <Route path="agenda" element={<ColoquiosAgendaPage />} />
+              <Route
+                path="registro-academico"
+                element={<RegistroAcademicoPage />}
+              />
+            </Route>
+
+            {/* Estructura académica */}
+            <Route
+              path="estructura"
+              element={<ProtectedRoute permission="estructura:gestionar" />}
+            >
+              <Route index element={<EstructuraHomePage />} />
+              <Route path="carreras" element={<CarrerasListPage />} />
+              <Route path="programas" element={<ProgramasListPage />} />
+              <Route path="fechas" element={<FechasAcademicasPage />} />
+            </Route>
+
+            {/* Encuentros */}
+            <Route
+              path="encuentros"
+              element={<ProtectedRoute permission="encuentros:gestionar" />}
+            >
+              <Route index element={<EncuentrosSlotsPage />} />
+              <Route path="slots/:id" element={<SlotDetailPage />} />
+            </Route>
+
+            {/* Guardias */}
+            <Route
+              path="guardias"
+              element={<ProtectedRoute permission="guardias:registrar" />}
+            >
+              <Route index element={<GuardiasListPage />} />
+            </Route>
           </Route>
         </Route>
 
