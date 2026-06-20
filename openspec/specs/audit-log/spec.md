@@ -62,3 +62,18 @@ El sistema SHALL exponer los códigos de acción como constantes en `backend/app
 #### Scenario: Código no declarado rechazado
 - **WHEN** se pasa a `audit_action` un código de acción que no existe en `AuditCodes`
 - **THEN** mypy/pyright reporta error de tipo (no es un string literal arbitrario)
+
+### Requirement: Detalle de acción COMUNICACION_ENVIAR
+El sistema SHALL registrar en el audit log cada acción de envío de comunicación (creación de lote, aprobación individual, aprobación de lote, cancelación individual, cancelación de lote) con el código `COMUNICACION_ENVIAR`. El `detalle` JSONB SHALL incluir: `lote_id`, `cantidad_destinatarios`, `materia_id` (si aplica), y `tipo_operacion` (`crear_lote`, `aprobar_individual`, `aprobar_lote`, `cancelar_individual`, `cancelar_lote`).
+
+#### Scenario: Auditoría de creación de lote
+- **WHEN** se crea un lote de 5 comunicaciones
+- **THEN** existe un registro en `audit_log` con `accion = "COMUNICACION_ENVIAR"` y `detalle.tipo_operacion = "crear_lote"` y `detalle.cantidad_destinatarios = 5`
+
+#### Scenario: Auditoría de aprobación individual
+- **WHEN** se aprueba una comunicación individual
+- **THEN** existe un registro en `audit_log` con `accion = "COMUNICACION_ENVIAR"` y `detalle.tipo_operacion = "aprobar_individual"`
+
+#### Scenario: Auditoría de cancelación de lote
+- **WHEN** se cancela un lote completo
+- **THEN** existe un registro en `audit_log` con `accion = "COMUNICACION_ENVIAR"` y `detalle.tipo_operacion = "cancelar_lote"` y `detalle.cantidad_destinatarios = N`

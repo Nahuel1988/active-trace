@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     otel_service_name: str = Field(default="activia-trace", alias="OTEL_SERVICE_NAME")
     otel_exporter_otlp_endpoint: str = Field(default="", alias="OTEL_EXPORTER_OTLP_ENDPOINT")
 
+    worker_poll_interval_seconds: int = Field(default=30, alias="WORKER_POLL_INTERVAL_SECONDS")
+    worker_batch_size: int = Field(default=50, alias="WORKER_BATCH_SIZE")
+
     @field_validator("encryption_key")
     @classmethod
     def encryption_key_must_be_32_chars(cls, v: str) -> str:

@@ -36,6 +36,8 @@ from app.models import (  # noqa: F401 — register models in Base.metadata
     AcknowledgmentAviso,
     VersionPadron,
     EntradaPadron,
+    Comunicacion,
+    EstadoComunicacion,
 )
 
 config = context.config
