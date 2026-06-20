@@ -23,20 +23,52 @@ pytestmark = pytest.mark.requires_db
 
 
 @pytest.fixture(scope="module")
-def app():
+def app(db_engine):  # db_engine asegura que las tablas existen
+    import os
+
+    from app.core.dependencies import get_settings
+
+    # Redirigir la app a la BD de test para que encuentre las tablas que
+    # crea db_engine (session-scoped en conftest.py).
+    test_url = os.environ.get("TEST_DATABASE_URL")
+    if test_url:
+        os.environ["DATABASE_URL"] = test_url
+        get_settings.cache_clear()
     return create_app()
 
 
 @pytest.fixture
-def _mock_user():
+async def _mock_user(db_session):
+    """Creates a real Tenant + User in the DB and returns a MagicMock with real IDs."""
     from unittest.mock import MagicMock
 
-    user = MagicMock()
-    user.id = uuid.uuid4()
-    user.actor_id = user.id
-    user.tenant_id = uuid.uuid4()
-    user.impersonated = False
-    return user
+    from app.models.tenant import Tenant
+    from app.models.user import User
+
+    tenant = Tenant(
+        id=uuid.uuid4(),
+        slug=f"test-{uuid.uuid4().hex[:8]}",
+        nombre="Test Tenant",
+    )
+    db_session.add(tenant)
+
+    user = User(
+        id=uuid.uuid4(),
+        tenant_id=tenant.id,
+        email_encrypted="test@test.com",
+        email_lookup=f"test-{uuid.uuid4().hex[:16]}",
+        password_hash="$argon2id$v=19$m=65536,t=3,p=4$test",
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    mock = MagicMock()
+    mock.id = user.id
+    mock.actor_id = user.id
+    mock.tenant_id = tenant.id
+    mock.impersonated = False
+    return mock
 
 
 @pytest.fixture
@@ -244,15 +276,16 @@ class TestTareaEstado:
 
     async def test_09_cambiar_estado_tarea_ajena_404(self, client_profesor, _mock_user):
         """TRIANG: PROFESOR cambia estado de tarea ajena → 404."""
-        otro_id = uuid.uuid4()
         resp = await client_profesor.post(
             "/api/tareas",
-            json={"asignado_a": str(otro_id), "descripcion": "Ajena"},
+            json={"asignado_a": str(_mock_user.id), "descripcion": "Ajena"},
         )
         tarea_id = resp.json()["id"]
 
         # Cambiar mock para que sea otro usuario
-        _mock_user.id = uuid.uuid4()
+        nuevo_id = uuid.uuid4()
+        _mock_user.id = nuevo_id
+        _mock_user.actor_id = nuevo_id  # el router usa actor_id (soporta impersonación)
 
         patch_resp = await client_profesor.patch(
             f"/api/tareas/{tarea_id}/estado",

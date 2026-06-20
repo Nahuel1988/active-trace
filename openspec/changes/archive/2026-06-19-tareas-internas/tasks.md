@@ -95,6 +95,6 @@
 
 ## 9. Verificación final
 
-- [ ] 9.1 Ejecutar la suite completa: `pytest backend/tests/ -v --tb=short`. Todos los tests de C-16 pasan; ningún test previo se rompe.
-- [ ] 9.2 Verificar cobertura: `pytest backend/tests/ --cov=backend/app --cov-report=term-missing`. ≥80% líneas global; ≥90% en reglas de negocio (máquina de estados, alcance por rol, trazabilidad de delegación).
-- [ ] 9.3 Confirmar que `GET /api/tareas` retorna lista vacía (no 500) en DB limpia y que `GET /api/tareas/mias` funciona para un usuario sin tareas.
+- [x] 9.1 Ejecutar la suite completa: `pytest backend/tests/ -v --tb=short`. Todos los tests de C-16 pasan; ningún test previo se rompe.
+- [x] 9.2 Verificar cobertura: `pytest backend/tests/ --cov=backend/app --cov-report=term-missing`. ≥80% líneas global; ≥90% en reglas de negocio (máquina de estados, alcance por rol, trazabilidad de delegación).
+- [x] 9.3 Confirmar que `GET /api/tareas` retorna lista vacía (no 500) en DB limpia y que `GET /api/tareas/mias` funciona para un usuario sin tareas.

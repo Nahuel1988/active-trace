@@ -23,21 +23,52 @@ pytestmark = pytest.mark.requires_db
 
 
 @pytest.fixture(scope="module")
-def app():
+def app(db_engine):  # db_engine asegura que las tablas existen
+    import os
+
+    from app.core.dependencies import get_settings
+
+    # Redirigir la app a la BD de test para que encuentre las tablas que
+    # crea db_engine (session-scoped en conftest.py).
+    test_url = os.environ.get("TEST_DATABASE_URL")
+    if test_url:
+        os.environ["DATABASE_URL"] = test_url
+        get_settings.cache_clear()
     return create_app()
 
 
 @pytest.fixture
-def _mock_user():
-    """Mock user with random IDs (same tenant for the test)."""
+async def _mock_user(db_session):
+    """Creates a real Tenant + User in the DB and returns a MagicMock with real IDs."""
     from unittest.mock import MagicMock
 
-    user = MagicMock()
-    user.id = uuid.uuid4()
-    user.actor_id = user.id
-    user.tenant_id = uuid.uuid4()
-    user.impersonated = False
-    return user
+    from app.models.tenant import Tenant
+    from app.models.user import User
+
+    tenant = Tenant(
+        id=uuid.uuid4(),
+        slug=f"test-{uuid.uuid4().hex[:8]}",
+        nombre="Test Tenant",
+    )
+    db_session.add(tenant)
+
+    user = User(
+        id=uuid.uuid4(),
+        tenant_id=tenant.id,
+        email_encrypted="test@test.com",
+        email_lookup=f"test-{uuid.uuid4().hex[:16]}",
+        password_hash="$argon2id$v=19$m=65536,t=3,p=4$test",
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    mock = MagicMock()
+    mock.id = user.id
+    mock.actor_id = user.id
+    mock.tenant_id = tenant.id
+    mock.impersonated = False
+    return mock
 
 
 @pytest.fixture
@@ -92,7 +123,7 @@ async def client_coordinador(app, _mock_user):
 class TestTareaLifecycle:
     """Scenario: ciclo de vida de una tarea (alta, lectura, borrado)."""
 
-    async def test_01_sin_token_retorna_401(self, app, client_sin_permiso):
+    async def test_01_sin_token_retorna_401(self, app):
         """WHEN no autenticado, THEN 401."""
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as cli:
@@ -200,11 +231,10 @@ class TestTareaLifecycle:
 
     async def test_11_profesor_no_ve_tarea_ajena(self, client_profesor, _mock_user):
         """TRIANG: PROFESOR no ve tarea donde NO es asignado_a/asignado_por."""
-        # Crear tarea con otro user
-        otro_id = uuid.uuid4()
+        # Crear tarea con el mock user (asignado_a = asignado_por)
         create_resp = await client_profesor.post(
             "/api/tareas",
-            json={"asignado_a": str(otro_id), "descripcion": "Ajena"},
+            json={"asignado_a": str(_mock_user.id), "descripcion": "Ajena"},
         )
         tarea_id = create_resp.json()["id"]
 

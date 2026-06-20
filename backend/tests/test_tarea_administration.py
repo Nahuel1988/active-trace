@@ -23,30 +23,70 @@ pytestmark = pytest.mark.requires_db
 
 
 @pytest.fixture(scope="module")
-def app():
+def app(db_engine):  # db_engine asegura que las tablas existen
+    import os
+
+    from app.core.dependencies import get_settings
+
+    # Redirigir la app a la BD de test para que encuentre las tablas que
+    # crea db_engine (session-scoped en conftest.py).
+    test_url = os.environ.get("TEST_DATABASE_URL")
+    if test_url:
+        os.environ["DATABASE_URL"] = test_url
+        get_settings.cache_clear()
     return create_app()
 
 
 @pytest.fixture
-def _mock_users():
-    """Retorna un dict con user1 (dueño de tareas) y user2 (otro profesor)."""
+async def _mock_users(db_session):
+    """Creates a real Tenant + 2 Users in DB and returns dict with MagicMocks."""
     from unittest.mock import MagicMock
 
-    tenant_id = uuid.uuid4()
+    from app.models.tenant import Tenant
+    from app.models.user import User
 
-    user1 = MagicMock()
-    user1.id = uuid.uuid4()
-    user1.actor_id = user1.id
-    user1.tenant_id = tenant_id
-    user1.impersonated = False
+    tenant = Tenant(
+        id=uuid.uuid4(),
+        slug=f"test-{uuid.uuid4().hex[:8]}",
+        nombre="Test Tenant",
+    )
+    db_session.add(tenant)
 
-    user2 = MagicMock()
-    user2.id = uuid.uuid4()
-    user2.actor_id = user2.id
-    user2.tenant_id = tenant_id
-    user2.impersonated = False
+    user1 = User(
+        id=uuid.uuid4(),
+        tenant_id=tenant.id,
+        email_encrypted="user1@test.com",
+        email_lookup=f"user1-{uuid.uuid4().hex[:16]}",
+        password_hash="$argon2id$v=19$m=65536,t=3,p=4$test",
+    )
+    db_session.add(user1)
 
-    return {"user1": user1, "user2": user2, "tenant_id": tenant_id}
+    user2 = User(
+        id=uuid.uuid4(),
+        tenant_id=tenant.id,
+        email_encrypted="user2@test.com",
+        email_lookup=f"user2-{uuid.uuid4().hex[:16]}",
+        password_hash="$argon2id$v=19$m=65536,t=3,p=4$test",
+    )
+    db_session.add(user2)
+
+    await db_session.commit()
+    await db_session.refresh(user1)
+    await db_session.refresh(user2)
+
+    u1_mock = MagicMock()
+    u1_mock.id = user1.id
+    u1_mock.actor_id = user1.id
+    u1_mock.tenant_id = tenant.id
+    u1_mock.impersonated = False
+
+    u2_mock = MagicMock()
+    u2_mock.id = user2.id
+    u2_mock.actor_id = user2.id
+    u2_mock.tenant_id = tenant.id
+    u2_mock.impersonated = False
+
+    return {"user1": u1_mock, "user2": u2_mock, "tenant_id": tenant.id}
 
 
 @pytest.fixture

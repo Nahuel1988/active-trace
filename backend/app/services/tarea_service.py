@@ -210,7 +210,7 @@ class TareaService:
         tarea = await self._get_tarea_accesible(
             tenant_id=tenant_id,
             tarea_id=tarea_id,
-            scope_user_id=scope,
+            scope_user_id=scope_user_id,
             session=session,
         )
 
@@ -276,11 +276,12 @@ class TareaService:
         tarea = await self._get_tarea_accesible(
             tenant_id=tenant_id,
             tarea_id=tarea_id,
-            scope_user_id=scope,
+            scope_user_id=scope_user_id,
             session=session,
         )
 
-        estado_anterior = tarea.estado
+        # SQLAlchemy devuelve el string de la columna; lo convertimos a Enum
+        estado_anterior = EstadoTarea(tarea.estado)
         transiciones_validas = self._TRANSICIONES.get(estado_anterior, set())
 
         if nuevo_estado not in transiciones_validas:

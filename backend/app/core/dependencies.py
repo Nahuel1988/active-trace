@@ -90,10 +90,20 @@ def get_session_factory() -> async_sessionmaker[AsyncSession]:
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """Yields an AsyncSession and commits on success, rolls back on error.
+
+    Standard FastAPI + SQLAlchemy unit-of-work pattern: the session is
+    committed after the request handler completes successfully, or rolled
+    back if an exception escapes.
+    """
     factory = get_session_factory()
     session = factory()
     try:
         yield session
+        await session.commit()
+    except Exception:
+        await session.rollback()
+        raise
     finally:
         await session.close()
 

@@ -11,6 +11,7 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 import pytest
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings
@@ -69,6 +70,9 @@ async def db_engine(settings: Settings):
     event loop que usarán los tests. En Windows con IocpProactor, un engine
     creado fuera del event loop no puede conectarse a Docker via asyncpg
     (WinError 64 / ConnectionResetError).
+
+    Usa DROP SCHEMA ... CASCADE en teardown para evitar errores de FK
+    al limpiar entre sesiones de test.
     """
     import app.models  # noqa: F401 — registra todos los modelos en Base.metadata
 
@@ -76,11 +80,18 @@ async def db_engine(settings: Settings):
 
     url = settings.test_database_url or settings.database_url
     engine = create_test_engine(url)
+    # Drop + recreate schema para garantizar schema limpio siempre
+    async with engine.begin() as conn:
+        await conn.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
+        await conn.execute(text("CREATE SCHEMA public"))
+        await conn.execute(text("GRANT ALL ON SCHEMA public TO public"))
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield engine
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+        await conn.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
+        await conn.execute(text("CREATE SCHEMA public"))
+        await conn.execute(text("GRANT ALL ON SCHEMA public TO public"))
     await engine.dispose()
 
 
