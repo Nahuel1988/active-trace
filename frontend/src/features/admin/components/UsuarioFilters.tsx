@@ -48,6 +48,7 @@ export function UsuarioFiltersBar({ filters, onChange }: UsuarioFiltersProps) {
           Regional
         </label>
         <select
+          aria-label="Regional"
           value={filters.regional ?? ''}
           onChange={handleRegional}
           className="rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
@@ -66,6 +67,7 @@ export function UsuarioFiltersBar({ filters, onChange }: UsuarioFiltersProps) {
           Facturador
         </label>
         <select
+          aria-label="Facturador"
           value={
             filters.facturador === undefined ? '' : String(filters.facturador)
           }

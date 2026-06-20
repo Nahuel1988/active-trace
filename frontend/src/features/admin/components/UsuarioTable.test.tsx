@@ -22,7 +22,7 @@ const mockUsuarios: Usuario[] = [
 describe('UsuarioTable', () => {
   it('renders usuario name but NOT PII columns', () => {
     render(<UsuarioTable usuarios={mockUsuarios} />);
-    expect(screen.getByText('Ana')).toBeInTheDocument();
+    expect(screen.getByText('Ana López')).toBeInTheDocument();
     // PII column headers must NOT be in the document
     expect(screen.queryByText(/^DNI$/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/^CUIL$/i)).not.toBeInTheDocument();

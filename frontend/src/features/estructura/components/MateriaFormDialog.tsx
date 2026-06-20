@@ -8,11 +8,14 @@ import type { MateriaFormData, ClavePlus } from '@/features/estructura/types';
 
 const CLAVES_PLUS: ClavePlus[] = ['PROG', 'BD', 'ARQ', 'MAT', 'MET'];
 
+const CLAVES_PLUS_SET = new Set(['PROG', 'BD', 'ARQ', 'MAT', 'MET']);
+
 const materiaSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido'),
-  clave_plus: z.enum(['PROG', 'BD', 'ARQ', 'MAT', 'MET'], {
-    errorMap: () => ({ message: 'La clave de Plus es obligatoria' }),
-  }),
+  clave_plus: z
+    .string()
+    .min(1, 'La clave de Plus es obligatoria')
+    .refine((val): val is ClavePlus => CLAVES_PLUS_SET.has(val), 'Clave inválida'),
 });
 
 interface MateriaFormDialogProps {

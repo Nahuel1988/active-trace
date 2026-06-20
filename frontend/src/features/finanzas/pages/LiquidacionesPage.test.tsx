@@ -4,8 +4,10 @@ import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { type ReactNode } from 'react';
 
+const mockCohorteId = { value: '' };
+
 vi.mock('@/shared/comision/useComisionContext', () => ({
-  useComisionContext: () => ({ materia_id: '', cohorte_id: '', setComision: vi.fn() }),
+  useComisionContext: () => ({ materia_id: '', cohorte_id: mockCohorteId.value, setComision: vi.fn() }),
 }));
 
 vi.mock('@/features/finanzas/hooks/useLiquidaciones', () => ({
@@ -41,7 +43,18 @@ describe('LiquidacionesPage', () => {
   });
 
   it('muestra botón de calcular cuando canCalcular es true', () => {
-    render(<LiquidacionesPage canCalcular />, { wrapper });
+    mockCohorteId.value = 'c-1';
+    render(<LiquidacionesPage canCalcular />, {
+      wrapper: ({ children }) => {
+        const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+        return (
+          <QueryClientProvider client={client}>
+            <MemoryRouter initialEntries={['/?periodo=2026-06']}>{children}</MemoryRouter>
+          </QueryClientProvider>
+        );
+      },
+    });
     expect(screen.getByRole('button', { name: /calcular período/i })).toBeInTheDocument();
+    mockCohorteId.value = '';
   });
 });

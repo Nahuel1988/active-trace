@@ -90,6 +90,51 @@ describe('useMenuItems', () => {
       'Importar padrón/calificaciones',
       'Atrasados',
       'Comunicaciones',
+      'Finanzas',
+      'Usuarios',
+      'Auditoría',
     ]);
+  });
+
+  it('incluye Finanzas solo con liquidaciones:ver', () => {
+    mockUsePermission.mockImplementation((perm: string) => perm === 'liquidaciones:ver');
+
+    function TestComponent() {
+      const items = useMenuItems();
+      return <ul>{items.map((i) => <li key={i.path}>{i.label}</li>)}</ul>;
+    }
+
+    render(<TestComponent />);
+    expect(screen.getByText('Finanzas')).toBeInTheDocument();
+    expect(screen.queryByText('Usuarios')).not.toBeInTheDocument();
+    expect(screen.queryByText('Auditoría')).not.toBeInTheDocument();
+  });
+
+  it('incluye Usuarios solo con usuarios:gestionar', () => {
+    mockUsePermission.mockImplementation((perm: string) => perm === 'usuarios:gestionar');
+
+    function TestComponent() {
+      const items = useMenuItems();
+      return <ul>{items.map((i) => <li key={i.path}>{i.label}</li>)}</ul>;
+    }
+
+    render(<TestComponent />);
+    expect(screen.getByText('Usuarios')).toBeInTheDocument();
+    expect(screen.queryByText('Finanzas')).not.toBeInTheDocument();
+    expect(screen.queryByText('Auditoría')).not.toBeInTheDocument();
+  });
+
+  it('incluye Auditoría solo con auditoria:ver', () => {
+    mockUsePermission.mockImplementation((perm: string) => perm === 'auditoria:ver');
+
+    function TestComponent() {
+      const items = useMenuItems();
+      return <ul>{items.map((i) => <li key={i.path}>{i.label}</li>)}</ul>;
+    }
+
+    render(<TestComponent />);
+    expect(screen.getByText('Auditoría')).toBeInTheDocument();
+    expect(screen.queryByText('Finanzas')).not.toBeInTheDocument();
+    expect(screen.queryByText('Usuarios')).not.toBeInTheDocument();
   });
 });

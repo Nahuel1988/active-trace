@@ -18,8 +18,9 @@ export function AuditLogFilters({ filters, onChange }: Props) {
   return (
     <div className="flex flex-wrap gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-500">Desde</label>
+        <label htmlFor="alf-desde" className="text-xs font-medium text-gray-500">Desde</label>
         <input
+          id="alf-desde"
           type="date"
           value={filters.desde ?? ''}
           onChange={handleChange('desde')}
@@ -28,8 +29,9 @@ export function AuditLogFilters({ filters, onChange }: Props) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-500">Hasta</label>
+        <label htmlFor="alf-hasta" className="text-xs font-medium text-gray-500">Hasta</label>
         <input
+          id="alf-hasta"
           type="date"
           value={filters.hasta ?? ''}
           onChange={handleChange('hasta')}
@@ -38,8 +40,9 @@ export function AuditLogFilters({ filters, onChange }: Props) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-500">Materia ID</label>
+        <label htmlFor="alf-materia" className="text-xs font-medium text-gray-500">Materia ID</label>
         <input
+          id="alf-materia"
           type="text"
           placeholder="UUID de materia"
           value={filters.materia_id ?? ''}
@@ -49,8 +52,9 @@ export function AuditLogFilters({ filters, onChange }: Props) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-gray-500">Acción</label>
+        <label htmlFor="alf-accion" className="text-xs font-medium text-gray-500">Acción</label>
         <input
+          id="alf-accion"
           type="text"
           placeholder="ej. CREATE_ALUMNO"
           value={filters.accion ?? ''}

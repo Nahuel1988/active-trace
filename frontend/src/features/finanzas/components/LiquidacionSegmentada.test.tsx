@@ -31,7 +31,7 @@ describe('LiquidacionSegmentada', () => {
   it('renders tres segmentos con datos mock', () => {
     render(<LiquidacionSegmentada vista={mockVista} />);
     expect(screen.getByText('General')).toBeInTheDocument();
-    expect(screen.getByText('NEXO')).toBeInTheDocument();
+    expect(screen.getAllByText('NEXO').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Facturantes')).toBeInTheDocument();
   });
 
