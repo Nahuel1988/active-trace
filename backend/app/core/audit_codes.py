@@ -61,6 +61,11 @@ class _AuditCodes:
     IMPERSONACION_INICIAR: str = "IMPERSONACION_INICIAR"
     IMPERSONACION_FINALIZAR: str = "IMPERSONACION_FINALIZAR"
 
+    # ── Análisis (C-11) ──────────────────────────────────────────────────
+    ANALISIS_CONSULTAR: str = "ANALISIS_CONSULTAR"
+    ANALISIS_EXPORTAR: str = "ANALISIS_EXPORTAR"
+    MONITOR_CONSULTAR: str = "MONITOR_CONSULTAR"
+
 
 # Singleton para acceso directo
 AuditCodes = _AuditCodes()
