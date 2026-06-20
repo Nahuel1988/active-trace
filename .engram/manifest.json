@@ -200,6 +200,14 @@
       "sessions": 0,
       "memories": 2,
       "prompts": 0
+    },
+    {
+      "id": "4c0df81b",
+      "created_by": "moral",
+      "created_at": "2026-06-20T06:00:57Z",
+      "sessions": 0,
+      "memories": 2,
+      "prompts": 0
     }
   ]
 }
