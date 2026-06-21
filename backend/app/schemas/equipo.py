@@ -23,6 +23,9 @@ class EquipoResumen(BaseModel):
     carrera_id: Optional[str] = None
     cohorte_id: Optional[str] = None
     conteo: int = Field(..., ge=0)
+    materia_nombre: Optional[str] = None
+    carrera_nombre: Optional[str] = None
+    cohorte_nombre: Optional[str] = None
 
 
 class AsignacionEquipoItem(BaseModel):

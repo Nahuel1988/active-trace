@@ -30,7 +30,8 @@ class Aviso(Base, TenantScopedMixin):
     __tablename__ = "aviso"
 
     alcance: Mapped[AlcanceAviso] = mapped_column(
-        SQLEnum(AlcanceAviso, name="alcance_aviso"), nullable=False
+        SQLEnum(AlcanceAviso, name="alcance_aviso", values_callable=lambda x: [e.value for e in x]),
+        nullable=False,
     )
     materia_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("materia.id", ondelete="SET NULL"), nullable=True
@@ -40,7 +41,8 @@ class Aviso(Base, TenantScopedMixin):
     )
     rol_destino: Mapped[str | None] = mapped_column(String(32), nullable=True)
     severidad: Mapped[SeveridadAviso] = mapped_column(
-        SQLEnum(SeveridadAviso, name="severidad_aviso"), nullable=False
+        SQLEnum(SeveridadAviso, name="severidad_aviso", values_callable=lambda x: [e.value for e in x]),
+        nullable=False,
     )
     titulo: Mapped[str] = mapped_column(String(255), nullable=False)
     cuerpo: Mapped[str] = mapped_column(Text, nullable=False)

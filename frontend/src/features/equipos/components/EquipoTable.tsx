@@ -17,13 +17,13 @@ export function EquipoTable({ equipos }: EquipoTableProps) {
               Materia
             </th>
             <th className="px-4 py-3 text-left font-medium text-gray-500">
-              Comisiones
+              Carrera
+            </th>
+            <th className="px-4 py-3 text-left font-medium text-gray-500">
+              Cohorte
             </th>
             <th className="px-4 py-3 text-left font-medium text-gray-500">
               Docentes
-            </th>
-            <th className="px-4 py-3 text-left font-medium text-gray-500">
-              Vigencia
             </th>
             <th className="px-4 py-3 text-right font-medium text-gray-500">
               Acciones
@@ -32,25 +32,20 @@ export function EquipoTable({ equipos }: EquipoTableProps) {
         </thead>
         <tbody className="divide-y divide-gray-100 bg-white">
           {equipos.map((equipo) => {
-            const desde = new Date(equipo.vigencia_desde).toLocaleDateString(
-              'es-AR',
-            );
-            const hasta = new Date(equipo.vigencia_hasta).toLocaleDateString(
-              'es-AR',
-            );
+            const rowKey = `${equipo.materia_id}-${equipo.carrera_id}-${equipo.cohorte_id}`;
             return (
-              <tr key={equipo.id} className="hover:bg-gray-50">
+              <tr key={rowKey} className="hover:bg-gray-50">
                 <td className="px-4 py-3 font-medium text-gray-900">
-                  {equipo.materia_nombre}
+                  {equipo.materia_nombre ?? equipo.materia_id ?? '—'}
                 </td>
                 <td className="px-4 py-3 text-gray-600">
-                  {equipo.comisiones?.join(', ') || '—'}
+                  {equipo.carrera_nombre ?? equipo.carrera_id ?? '—'}
                 </td>
                 <td className="px-4 py-3 text-gray-600">
-                  {equipo.cantidad_docentes}
+                  {equipo.cohorte_nombre ?? equipo.cohorte_id ?? '—'}
                 </td>
-                <td className="px-4 py-3 text-xs text-gray-500">
-                  {desde} — {hasta}
+                <td className="px-4 py-3 text-gray-600">
+                  {equipo.conteo}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-2">
@@ -70,7 +65,6 @@ export function EquipoTable({ equipos }: EquipoTableProps) {
                     </button>
                     <button
                       type="button"
-                      onClick={() => navigate('/equipos/clonar')}
                       className="rounded px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100"
                     >
                       Exportar

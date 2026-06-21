@@ -116,8 +116,13 @@ async def asignacion_masiva(
     from app.models.role import Role
     from sqlalchemy import select
 
+    try:
+        role_uuid = uuid.UUID(body.role_id)
+    except ValueError:
+        raise HTTPException(status_code=422, detail=f"role_id '{body.role_id}' is not a valid UUID")
+
     stmt = select(Role).where(
-        Role.id == uuid.UUID(body.role_id),
+        Role.id == role_uuid,
         Role.tenant_id == current_user.tenant_id,
         Role.deleted_at.is_(None),
     )
@@ -126,20 +131,37 @@ async def asignacion_masiva(
     if role is None:
         raise HTTPException(status_code=404, detail="role not found")
 
-    usuario_uuids = [uuid.UUID(uid) for uid in body.usuario_ids]
     ip, user_agent = _get_client_info(request)
+
+    try:
+        usuario_uuids = [uuid.UUID(uid) for uid in body.usuario_ids]
+    except ValueError:
+        raise HTTPException(status_code=422, detail="One or more usuario_ids are not valid UUIDs")
+
+    def _parse_uuid(value: str | None, name: str) -> uuid.UUID | None:
+        if value is None:
+            return None
+        try:
+            return uuid.UUID(value)
+        except ValueError:
+            raise HTTPException(status_code=422, detail=f"'{name}' is not a valid UUID: {value}")
+
+    materia_uuid = _parse_uuid(body.materia_id, "materia_id")
+    carrera_uuid = _parse_uuid(body.carrera_id, "carrera_id")
+    cohorte_uuid = _parse_uuid(body.cohorte_id, "cohorte_id")
+    responsable_uuid = _parse_uuid(body.responsable_id, "responsable_id")
 
     resumen = await service.asignacion_masiva(
         tenant_id=current_user.tenant_id,
         actor_id=current_user.id,
-        role_id=uuid.UUID(body.role_id),
+        role_id=role_uuid,
         role_code=role.code,
         usuario_ids=usuario_uuids,
-        materia_id=uuid.UUID(body.materia_id) if body.materia_id else None,
-        carrera_id=uuid.UUID(body.carrera_id) if body.carrera_id else None,
-        cohorte_id=uuid.UUID(body.cohorte_id) if body.cohorte_id else None,
+        materia_id=materia_uuid,
+        carrera_id=carrera_uuid,
+        cohorte_id=cohorte_uuid,
         comisiones=body.comisiones,
-        responsable_id=uuid.UUID(body.responsable_id) if body.responsable_id else None,
+        responsable_id=responsable_uuid,
         desde=body.desde,
         hasta=body.hasta,
         session=db,

@@ -1,16 +1,11 @@
 export interface Equipo {
-  id: string;
-  materia_id: string;
-  materia_nombre: string;
-  carrera_id: string;
-  carrera_nombre: string;
-  cohorte_id: string;
-  cohorte_nombre: string;
-  comisiones: string[];
-  cantidad_docentes: number;
-  vigencia_desde: string;
-  vigencia_hasta: string;
-  created_at: string;
+  materia_id: string | null;
+  carrera_id: string | null;
+  cohorte_id: string | null;
+  conteo: number;
+  materia_nombre: string | null;
+  carrera_nombre: string | null;
+  cohorte_nombre: string | null;
 }
 
 export interface Asignacion {
@@ -28,15 +23,15 @@ export interface Asignacion {
 }
 
 export interface AsignacionMasivaRequest {
-  materia_id: string;
-  carrera_id: string;
-  cohorte_id: string;
-  rol: string;
-  responsable?: boolean;
+  usuario_ids: string[];
+  role_id: string;
+  materia_id?: string;
+  carrera_id?: string;
+  cohorte_id?: string;
   comisiones: string[];
-  vigencia_desde: string;
-  vigencia_hasta: string;
-  user_ids: string[];
+  responsable_id?: string;
+  desde: string;
+  hasta?: string;
 }
 
 export interface EquipoFilters {
@@ -61,13 +56,32 @@ export interface VigenciaRequest {
   vigencia_hasta: string;
 }
 
+export interface AsignacionMasivaItem {
+  usuario_id: string;
+  motivo: string;
+}
+
 export interface AsignacionMasivaResult {
   creadas: number;
-  rechazadas: number;
-  errores?: string[];
+  rechazadas: AsignacionMasivaItem[];
+  omitidas: AsignacionMasivaItem[];
 }
 
 export interface ClonarResult {
   clonadas: number;
   omitidas: number;
+}
+
+export interface MisEquiposAsignacion {
+  usuario_id: string;
+  role_code: string;
+  vigencia_desde: string;
+  vigencia_hasta?: string;
+}
+
+export interface MisEquipoItem {
+  materia_id: string | null;
+  carrera_id: string | null;
+  cohorte_id: string | null;
+  asignaciones: MisEquiposAsignacion[];
 }

@@ -41,3 +41,14 @@ export async function actualizarUsuario(
 export async function eliminarUsuario(id: string): Promise<void> {
   await api.delete(`/api/v1/admin/usuarios/${id}`);
 }
+
+export interface RoleItem {
+  id: string;
+  code: string;
+  nombre: string;
+}
+
+export async function fetchRoles(): Promise<RoleItem[]> {
+  const { data } = await api.get<RoleItem[]>('/api/v1/rbac/roles');
+  return data;
+}

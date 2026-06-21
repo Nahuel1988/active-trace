@@ -1,6 +1,7 @@
 import { api } from '@/shared/services/api';
 import type {
   Equipo,
+  MisEquipoItem,
   Asignacion,
   AsignacionMasivaRequest,
   AsignacionMasivaResult,
@@ -10,7 +11,7 @@ import type {
   VigenciaRequest,
 } from '@/features/equipos/types';
 
-export function fetchMisEquipos(): Promise<Equipo[]> {
+export function fetchMisEquipos(): Promise<MisEquipoItem[]> {
   return api.get('/api/v1/equipos/mis-equipos').then((r) => r.data);
 }
 

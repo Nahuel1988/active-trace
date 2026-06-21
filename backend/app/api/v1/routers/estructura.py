@@ -32,6 +32,45 @@ def _get_materia_service() -> MateriaService:
     return MateriaService()
 
 
+def _carrera_to_response(c) -> schemas.CarreraResponse:
+    return schemas.CarreraResponse(
+        id=str(c.id),
+        tenant_id=str(c.tenant_id),
+        codigo=c.codigo,
+        nombre=c.nombre,
+        estado=str(c.estado.value) if hasattr(c.estado, "value") else str(c.estado),
+        created_at=c.created_at,
+        updated_at=c.updated_at,
+    )
+
+
+def _cohorte_to_response(c) -> schemas.CohorteResponse:
+    return schemas.CohorteResponse(
+        id=str(c.id),
+        tenant_id=str(c.tenant_id),
+        carrera_id=str(c.carrera_id),
+        nombre=c.nombre,
+        anio=c.anio,
+        vig_desde=c.vig_desde,
+        vig_hasta=c.vig_hasta,
+        estado=str(c.estado.value) if hasattr(c.estado, "value") else str(c.estado),
+        created_at=c.created_at,
+        updated_at=c.updated_at,
+    )
+
+
+def _materia_to_response(m) -> schemas.MateriaResponse:
+    return schemas.MateriaResponse(
+        id=str(m.id),
+        tenant_id=str(m.tenant_id),
+        codigo=m.codigo,
+        nombre=m.nombre,
+        estado=str(m.estado.value) if hasattr(m.estado, "value") else str(m.estado),
+        created_at=m.created_at,
+        updated_at=m.updated_at,
+    )
+
+
 @router.get("/carreras", response_model=list[schemas.CarreraResponse])
 async def listar_carreras(
     grant: PermissionGrant = Depends(require_permission("estructura:gestionar")),
@@ -40,7 +79,7 @@ async def listar_carreras(
     service: CarreraService = Depends(_get_carrera_service),
 ):
     carreras = await service.list(tenant_id=current_user.tenant_id, session=db)
-    return [schemas.CarreraResponse.from_orm(c) for c in carreras]
+    return [_carrera_to_response(c) for c in carreras]
 
 
 @router.post("/carreras", response_model=schemas.CarreraResponse, status_code=201)
@@ -55,8 +94,7 @@ async def crear_carrera(
         c = await service.create(tenant_id=current_user.tenant_id, data=body.model_dump(), session=db)
     except CarreraError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
-
-    return schemas.CarreraResponse.from_orm(c)
+    return _carrera_to_response(c)
 
 
 @router.get("/cohortes", response_model=list[schemas.CohorteResponse])
@@ -66,9 +104,8 @@ async def listar_cohortes(
     db: AsyncSession = Depends(get_db),
     service: CohorteService = Depends(_get_cohorte_service),
 ):
-    # CohorteService does not implement list; use repository via service if added later.
-    # For now return empty list to keep router minimal and test permission guards.
-    return []
+    cohortes = await service.list(tenant_id=current_user.tenant_id, session=db)
+    return [_cohorte_to_response(c) for c in cohortes]
 
 
 @router.post("/cohortes", response_model=schemas.CohorteResponse, status_code=201)
@@ -83,7 +120,7 @@ async def crear_cohorte(
         c = await service.create(tenant_id=current_user.tenant_id, data=body.model_dump(), session=db)
     except CohorteError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
-    return schemas.CohorteResponse.from_orm(c)
+    return _cohorte_to_response(c)
 
 
 @router.get("/materias", response_model=list[schemas.MateriaResponse])
@@ -93,8 +130,8 @@ async def listar_materias(
     db: AsyncSession = Depends(get_db),
     service: MateriaService = Depends(_get_materia_service),
 ):
-    # MateriaService does not implement list; return empty list for now.
-    return []
+    materias = await service._repo.list_all(tenant_id=current_user.tenant_id, session=db)
+    return [_materia_to_response(m) for m in materias]
 
 
 @router.post("/materias", response_model=schemas.MateriaResponse, status_code=201)
@@ -109,5 +146,4 @@ async def crear_materia(
         m = await service.create(tenant_id=current_user.tenant_id, data=body.model_dump(), session=db)
     except MateriaError as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
-
-    return schemas.MateriaResponse.from_orm(m)
+    return _materia_to_response(m)

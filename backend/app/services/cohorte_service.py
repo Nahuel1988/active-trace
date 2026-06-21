@@ -19,6 +19,9 @@ class CohorteService:
         self._repo = repo or CohorteRepository()
         self._carrera_repo = carrera_repo or CarreraRepository()
 
+    async def list(self, *, tenant_id: UUID, session: AsyncSession) -> list[Cohorte]:
+        return await self._repo.list_all(tenant_id=tenant_id, session=session)
+
     async def create(self, *, tenant_id: UUID, data: dict, session: AsyncSession) -> Cohorte:
         # Verify carrera exists and is Activa
         carrera = await self._carrera_repo.get(id=data["carrera_id"], tenant_id=tenant_id, session=session)

@@ -16,32 +16,16 @@ import EquiposListPage from './EquiposListPage';
 
 const mockEquipos = [
   {
-    id: '1',
     materia_id: 'm1',
-    materia_nombre: 'Matemática',
     carrera_id: 'c1',
-    carrera_nombre: 'Ingeniería',
     cohorte_id: 'co1',
-    cohorte_nombre: '2025',
-    comisiones: ['A', 'B'],
-    cantidad_docentes: 3,
-    vigencia_desde: '2025-01-01',
-    vigencia_hasta: '2025-12-31',
-    created_at: '2025-01-01T00:00:00Z',
+    conteo: 3,
   },
   {
-    id: '2',
     materia_id: 'm2',
-    materia_nombre: 'Lengua',
     carrera_id: 'c1',
-    carrera_nombre: 'Ingeniería',
     cohorte_id: 'co1',
-    cohorte_nombre: '2025',
-    comisiones: ['C'],
-    cantidad_docentes: 2,
-    vigencia_desde: '2025-03-01',
-    vigencia_hasta: '2025-11-30',
-    created_at: '2025-01-15T00:00:00Z',
+    conteo: 2,
   },
 ];
 
@@ -74,8 +58,8 @@ describe('EquiposListPage', () => {
   it('renders table with equipos data', () => {
     mockUseEquipos.mockReturnValue({ data: mockEquipos, isLoading: false, isError: false });
     renderPage();
-    expect(screen.getAllByText('Matemática').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('Lengua').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('m1').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('m2').length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows empty state', () => {

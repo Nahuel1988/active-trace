@@ -1,8 +1,8 @@
 // ── Tipos del feature avisos ──────────────────────────────────────────────────
 
-export type Alcance = 'Global' | 'PorMateria' | 'PorCohorte' | 'PorRol';
+export type Alcance = 'global' | 'por_materia' | 'por_cohorte' | 'por_rol';
 
-export type Severidad = 'Informativo' | 'Advertencia' | 'Critico';
+export type Severidad = 'info' | 'advertencia' | 'critico';
 
 export interface Aviso {
   id: string;

@@ -1,5 +1,6 @@
 import { useMisEquipos } from '@/features/equipos/hooks/useEquipos';
 import { EquipoCard } from '@/features/equipos/components/EquipoCard';
+import type { MisEquipoItem } from '@/features/equipos/types';
 import { Spinner } from '@/shared/components/Spinner';
 
 export default function MisEquiposPage() {
@@ -47,8 +48,11 @@ export default function MisEquiposPage() {
     <div className="p-6">
       <h1 className="mb-6 text-2xl font-bold text-gray-900">Mis Equipos</h1>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {equipos.map((equipo) => (
-          <EquipoCard key={equipo.id} equipo={equipo} />
+        {equipos.map((equipo: MisEquipoItem) => (
+          <EquipoCard
+            key={`${equipo.materia_id}-${equipo.carrera_id}-${equipo.cohorte_id}`}
+            equipo={equipo}
+          />
         ))}
       </div>
     </div>

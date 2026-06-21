@@ -18,6 +18,9 @@ from sqlalchemy import and_, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.asignacion import Asignacion
+from app.models.materia import Materia
+from app.models.carrera import Carrera
+from app.models.cohorte import Cohorte
 from app.repositories.base import BaseRepository
 
 
@@ -339,12 +342,21 @@ class AsignacionRepository(BaseRepository[Asignacion]):
                 Asignacion.carrera_id,
                 Asignacion.cohorte_id,
                 func.count(Asignacion.id).label("conteo"),
+                Materia.nombre.label("materia_nombre"),
+                Carrera.nombre.label("carrera_nombre"),
+                Cohorte.nombre.label("cohorte_nombre"),
             )
+            .outerjoin(Materia, Asignacion.materia_id == Materia.id)
+            .outerjoin(Carrera, Asignacion.carrera_id == Carrera.id)
+            .outerjoin(Cohorte, Asignacion.cohorte_id == Cohorte.id)
             .where(*conditions)
             .group_by(
                 Asignacion.materia_id,
                 Asignacion.carrera_id,
                 Asignacion.cohorte_id,
+                Materia.nombre,
+                Carrera.nombre,
+                Cohorte.nombre,
             )
         )
         result = await session.execute(stmt)
@@ -355,6 +367,9 @@ class AsignacionRepository(BaseRepository[Asignacion]):
                 "carrera_id": str(row.carrera_id) if row.carrera_id else None,
                 "cohorte_id": str(row.cohorte_id) if row.cohorte_id else None,
                 "conteo": row.conteo,
+                "materia_nombre": row.materia_nombre,
+                "carrera_nombre": row.carrera_nombre,
+                "cohorte_nombre": row.cohorte_nombre,
             })
         return rows
 

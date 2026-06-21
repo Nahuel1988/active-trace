@@ -13,8 +13,8 @@ const avisoSchema = z
   .object({
     titulo: z.string().min(1, 'El título es requerido'),
     cuerpo: z.string().min(1, 'El cuerpo es requerido'),
-    alcance: z.enum(['Global', 'PorMateria', 'PorCohorte', 'PorRol']),
-    severidad: z.enum(['Informativo', 'Advertencia', 'Critico']),
+    alcance: z.enum(['global', 'por_materia', 'por_cohorte', 'por_rol']),
+    severidad: z.enum(['info', 'advertencia', 'critico']),
     materia_id: z.string().nullable().optional(),
     cohorte_id: z.string().nullable().optional(),
     rol_destino: z.string().nullable().optional(),
@@ -56,8 +56,8 @@ export function AvisoFormDialog({ open, onClose, aviso }: AvisoFormDialogProps) 
     defaultValues: {
       titulo: '',
       cuerpo: '',
-      alcance: 'Global',
-      severidad: 'Informativo',
+      alcance: 'global',
+      severidad: 'info',
       materia_id: null,
       cohorte_id: null,
       rol_destino: null,
@@ -89,8 +89,8 @@ export function AvisoFormDialog({ open, onClose, aviso }: AvisoFormDialogProps) 
       reset({
         titulo: '',
         cuerpo: '',
-        alcance: 'Global',
-        severidad: 'Informativo',
+        alcance: 'global',
+        severidad: 'info',
         materia_id: null,
         cohorte_id: null,
         rol_destino: null,
@@ -105,9 +105,9 @@ export function AvisoFormDialog({ open, onClose, aviso }: AvisoFormDialogProps) 
   const onSubmit = async (data: AvisoFormSchema) => {
     const payload: AvisoFormData = {
       ...data,
-      materia_id: data.alcance === 'PorMateria' ? data.materia_id ?? null : null,
-      cohorte_id: data.alcance === 'PorCohorte' ? data.cohorte_id ?? null : null,
-      rol_destino: data.alcance === 'PorRol' ? data.rol_destino ?? null : null,
+      materia_id: data.alcance === 'por_materia' ? data.materia_id ?? null : null,
+      cohorte_id: data.alcance === 'por_cohorte' ? data.cohorte_id ?? null : null,
+      rol_destino: data.alcance === 'por_rol' ? data.rol_destino ?? null : null,
       orden: data.orden ?? null,
     };
 
@@ -152,25 +152,25 @@ export function AvisoFormDialog({ open, onClose, aviso }: AvisoFormDialogProps) 
               <label htmlFor="alcance" className="block text-sm font-medium text-gray-700">Alcance</label>
               <select id="alcance" {...register('alcance')}
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                <option value="Global">Global</option>
-                <option value="PorMateria">Por Materia</option>
-                <option value="PorCohorte">Por Cohorte</option>
-                <option value="PorRol">Por Rol</option>
+                <option value="global">Global</option>
+                <option value="por_materia">Por Materia</option>
+                <option value="por_cohorte">Por Cohorte</option>
+                <option value="por_rol">Por Rol</option>
               </select>
             </div>
             <div>
               <label htmlFor="severidad" className="block text-sm font-medium text-gray-700">Severidad</label>
               <select id="severidad" {...register('severidad')}
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                <option value="Informativo">Informativo</option>
-                <option value="Advertencia">Advertencia</option>
-                <option value="Critico">Crítico</option>
+                <option value="info">Informativo</option>
+                <option value="advertencia">Advertencia</option>
+                <option value="critico">Crítico</option>
               </select>
             </div>
           </div>
 
           {/* Conditional fields */}
-          {alcance === 'PorMateria' && (
+          {alcance === 'por_materia' && (
             <div>
               <label htmlFor="materia_id" className="block text-sm font-medium text-gray-700">Materia</label>
               <input id="materia_id" type="text" {...register('materia_id')}
@@ -178,7 +178,7 @@ export function AvisoFormDialog({ open, onClose, aviso }: AvisoFormDialogProps) 
             </div>
           )}
 
-          {alcance === 'PorCohorte' && (
+          {alcance === 'por_cohorte' && (
             <div>
               <label htmlFor="cohorte_id" className="block text-sm font-medium text-gray-700">Cohorte</label>
               <input id="cohorte_id" type="text" {...register('cohorte_id')}
@@ -186,7 +186,7 @@ export function AvisoFormDialog({ open, onClose, aviso }: AvisoFormDialogProps) 
             </div>
           )}
 
-          {alcance === 'PorRol' && (
+          {alcance === 'por_rol' && (
             <div>
               <label htmlFor="rol_destino" className="block text-sm font-medium text-gray-700">Rol destino</label>
               <input id="rol_destino" type="text" {...register('rol_destino')}

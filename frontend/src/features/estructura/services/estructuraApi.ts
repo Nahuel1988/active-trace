@@ -81,37 +81,37 @@ export function fetchCalendario(params?: {
 // ── Cohortes ─────────────────────────────────────────────────────────────────
 
 export function fetchCohortes(): Promise<Cohorte[]> {
-  return api.get('/api/v1/cohortes').then((r) => r.data);
+  return api.get('/api/v1/estructura/cohortes').then((r) => r.data);
 }
 
 export function crearCohorte(data: CohorteFormData): Promise<Cohorte> {
-  return api.post('/api/v1/cohortes', data).then((r) => r.data);
+  return api.post('/api/v1/estructura/cohortes', data).then((r) => r.data);
 }
 
 export function actualizarCohorte(
   id: string,
   data: Partial<CohorteFormData>,
 ): Promise<Cohorte> {
-  return api.put(`/api/v1/cohortes/${id}`, data).then((r) => r.data);
+  return api.put(`/api/v1/estructura/cohortes/${id}`, data).then((r) => r.data);
 }
 
 export function eliminarCohorte(id: string): Promise<void> {
-  return api.delete(`/api/v1/cohortes/${id}`).then(() => undefined);
+  return api.delete(`/api/v1/estructura/cohortes/${id}`).then(() => undefined);
 }
 
 // ── Materias ─────────────────────────────────────────────────────────────────
 
 export function fetchMaterias(): Promise<Materia[]> {
-  return api.get('/api/v1/materias').then((r) => r.data);
+  return api.get('/api/v1/estructura/materias').then((r) => r.data);
 }
 
 export function crearMateria(data: MateriaFormData): Promise<Materia> {
-  return api.post('/api/v1/materias', data).then((r) => r.data);
+  return api.post('/api/v1/estructura/materias', data).then((r) => r.data);
 }
 
 export function actualizarMateria(
   id: string,
   data: Partial<MateriaFormData>,
 ): Promise<Materia> {
-  return api.put(`/api/v1/materias/${id}`, data).then((r) => r.data);
+  return api.put(`/api/v1/estructura/materias/${id}`, data).then((r) => r.data);
 }
